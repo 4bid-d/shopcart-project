@@ -1,0 +1,31 @@
+{
+  "name": "expressexample",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.1",
+    "express": "~4.16.1",
+    "express-fileupload": "^1.3.1",
+    "express-handlebars": "^6.0.6",
+    "hbs": "^4.2.0",
+    "http-errors": "~1.6.3",
+    "mongodb": "^4.6.0",
+    "mongoose": "^6.3.5",
+    "mongoose-findorcreate": "^3.0.0",
+    "morgan": "~1.9.1",
+    "mv": "^2.1.1",
+    "nodemon": "^2.0.16",
+    "simple-mongodb-helper": "^0.6.2"
+  },
+  "main": "app.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "description": ""
+}

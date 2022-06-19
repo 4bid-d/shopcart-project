@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="\stylesheets\style.css">
+</head>
+
+
+<body id="body">
+
+    <section>
+        <div class="container p-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">n.</th>
+                        <th scope="col">Product name</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">category</th>
+                        <th scope="col">Description</th>
+                        <th scope="col"> </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each products}}
+                    <tr>
+
+                        <th scope="row">{{this.number}}</th>
+                        <td>{{this.productName}}</td>
+                        <td><a target="" href="{{this.image}}"><img src="{{this.image}}" alt="products-image"
+                                    style="height:  50px;width:50px;"></a></td>
+                        <td>{{this.Price}}</td>
+                        <td>{{this.category}}</td>
+                        <td>{{this.desc}}</td>
+                        <td><i class="fa fa-trash" id="{{this.number}}" onclick="sendJSON({{this.number}})"></i></td>
+
+
+
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            <a href="/admin/newproducts" class="btn btn-success ml-5" style=" border-color:black; float:right;"> + Add
+                new products</a>
+            <span id="deleteConfirmSpan"></span>
+        </div>
+    </section>
+
+    <script src="\javascripts\apply.js"></script>
+</body>
