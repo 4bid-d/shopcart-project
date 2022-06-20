@@ -20,12 +20,25 @@
             <a class="nav-link text-dark " style="" href="/user">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark " style="" href="/user/cart">Cart</a>
+            <a class="nav-link text-dark " style="" href=
+            {{#if user}}
+            "/user/cart"
+            {{else}}
+            "/user/signup"
+            {{/if}}
+            
+            >Cart</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark " style="" href="/user/orders">Your Orders</a>
+            <a class="nav-link text-dark " style="" href=
+               {{#if user}}
+            "/user/orders"
+            {{else}}
+            "/user/signup"
+            {{/if}}
+            >Your Orders</a>
           </li>
-          <li class="nav-item dropdown">
+          {{!-- <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-dark " style="" href="#" id="navbarDropdown" role="button"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Your Account
@@ -33,7 +46,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="/user/settings">Settings</a>
             </div>
-          </li>
+          </li> --}}
           <li class="nav-item">
             <a class="nav-link  text-dark " href="/admin" tabindex="-1" aria-disabled=""></a>
           </li>
@@ -57,7 +70,7 @@
             <a class="dropdown-item" href="user/login">Login</a>
             {{/if}}
             {{#if user}}
-            <a class="dropdown-item" href="#">Profile</a>
+            <a class="dropdown-item" href="true/profile">Profile</a>
           {{/if}}
           </div>
           {{!-- {{/if}} --}}
