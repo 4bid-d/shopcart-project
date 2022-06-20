@@ -13,7 +13,7 @@ router.get('/', async function (req, res) {
   } catch (err) {
     console.error(err)
   }
-  await res.render('admin-added-products', { title: 'Add products admin', products, admin: true });
+  await res.render('admin-added-products', { title: 'Add products', products, admin: true });
 })
 
 

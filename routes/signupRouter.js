@@ -10,12 +10,13 @@ router.post('/', async (req, res) => {
     var Body = req.body
     const bycryptedPass = await bcrpyt.hash(Body.pass, 10)
     var signupSuccess = false
-    // if (foundedSimilerUser.email == Body.email) {
 
-    //     console.log("if is used")
+    var emailChecking = await user.findOne({ email: Body.email })
 
-    // } else {
-        
+    if (emailChecking) {
+        signupSuccess = false
+        res.redirect(`/user/signup/${signupSuccess}`)
+    } else {
         try {
             userData = await user.create({
                 firstName: Body.fName,
@@ -24,22 +25,24 @@ router.post('/', async (req, res) => {
                 passWord: bycryptedPass
             })
             signupSuccess = true
-            res.redirect(`/user/signup/signupData/${signupSuccess}`)
+            res.redirect(`/user/signup/${signupSuccess}`)
 
 
         } catch (err) {
 
             console.log(err)
 
-        }   
-    
+        }
+
+    }
+
 
     // await res.render('signup', { title: 'signup' })
-    
+
 
 })
 router.get('/', (req, res) => {
-    res.render('signup', { title: 'signup' })
+    res.render('signup', { title: 'signup', })
 })
 
 module.exports = router

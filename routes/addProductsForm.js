@@ -53,14 +53,14 @@ router.post("/", async function (req, res) {
   }
   run()
 
-  await res.send('Your Product Have Been SuccessFully Added');
+  await res.render('addProductForm', { title: 'Products Form', admin: true });
 
 });
 
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-  res.render('addProductForm', { title: 'Express', admin: true });
+  res.render('addProductForm', { title: 'Products Form', admin: true });
 })
 
 module.exports = router;

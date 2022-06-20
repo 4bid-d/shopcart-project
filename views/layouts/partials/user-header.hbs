@@ -31,7 +31,6 @@
               Your Account
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/user/profile">Your Profile</a>
               <a class="dropdown-item" href="/user/settings">Settings</a>
             </div>
           </li>
@@ -39,10 +38,30 @@
             <a class="nav-link  text-dark " href="/admin" tabindex="-1" aria-disabled=""></a>
           </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0 pl-5">
+        {{!-- <form class="form-inline my-2 my-lg-0 pl-5">
           <input class="form-control mr-sm-2" type="search" placeholder="Search for products" aria-label="Search">
           <button class="btn btn-outline-light text-dark my-2 my-sm-0" type="submit">Search</button>
-        </form>
+        </form> --}}
+        {{!--
+        <button class="btn btn-white m-2">Sign up</button>
+        <button class="btn btn-white m-2">Login</button> --}}
+        <div class="dropdown show">
+          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Account
+          </a>
+        {{!-- {{#if notInAnyForm}} --}}
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            {{#if notSignedUser}}
+            <a class="dropdown-item" href="user/signup">Signup</a>
+            <a class="dropdown-item" href="user/login">Login</a>
+            {{/if}}
+            {{#if user}}
+            <a class="dropdown-item" href="#">Profile</a>
+          {{/if}}
+          </div>
+          {{!-- {{/if}} --}}
+        </div>
       </div>
     </nav>
   </div>

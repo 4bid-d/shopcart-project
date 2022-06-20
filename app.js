@@ -8,6 +8,7 @@ var userRouter = require('./routes/user');
 var addProductsRouter = require('./routes/new-products-admin');
 var newProductsRouter = require('./routes/addProductsForm');
 var deleteProductRouter = require('./routes/deleteProducts');
+var signupRouter = require('./routes/signupRouter');
 //mongoose requred
 var mongoose = require('mongoose');
 //var db = require('./config/mongoConnection');
@@ -38,9 +39,11 @@ app.use('/admin', addProductsRouter);
 app.use('/admin/addproducts', addProductsRouter);
 app.use('/admin/addedproducts', addProductsRouter);
 app.use('/admin/newproducts', newProductsRouter);
-app.use('/upload',require('./routes/addProductsForm'));
-app.use('/admin/delete',require('./routes/deleteProducts'));
-
+app.use('/upload',newProductsRouter);
+app.use('/admin/delete',deleteProductRouter);
+app.use('/user/signup',signupRouter);
+app.use("/user/signup/signupData",signupRouter)
+app.use("/user/signup/:signupSuccess",userRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -66,4 +69,9 @@ app.use(function(err, req, res, next) {
 // .catch((err)=>{
 //   console.log(err)
 // });
+// Set Port
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), function() {
+    console.log('Server started on port '+app.get('port'));
+});
 module.exports = app;

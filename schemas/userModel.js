@@ -1,10 +1,37 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    journal: [{type: mongoose.Schema.Types.ObjectId, ref: 'Journal'}]
+    user: {
+        type: String,
+        default: true,
+        immutable: true
+    },
+    firstName: {
+        type: String
+    },
+    
+    LastName: String,
+
+    email: {
+        type: String
+    },
+    passWord: {
+        type: String
+    },
+    dateCreated: {
+        type: Date,
+        default: () => Date.now(),
+        immutable: true,
+
+    },
+    updatedDate: {
+        type: Date,
+        default: Date.now()
+    }
+
+
+
 });
 
 
-module.exports.userSchema = mongoose.model('users', userSchema);
+module.exports = mongoose.model('users', userSchema);
