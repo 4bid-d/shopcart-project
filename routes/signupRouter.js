@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
 
 })
 router.get('/', (req, res) => {
-    res.render('signup', { title: 'signup', })
+    res.render('signup', { title: 'signup',inAnyForm:true })
 })
 
 module.exports = router

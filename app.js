@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var userRouter = require('./routes/user');
-
+var loginRouter = require('./routes/loginRouter')
 var addProductsRouter = require('./routes/new-products-admin');
 var newProductsRouter = require('./routes/addProductsForm');
 var deleteProductRouter = require('./routes/deleteProducts');
@@ -34,7 +34,7 @@ app.use(fileUpload());
 
 
 app.use('/', userRouter);
-app.use('/user', userRouter);
+// app.use('/user', userRouter);
 app.use('/admin', addProductsRouter);
 app.use('/admin/addproducts', addProductsRouter);
 app.use('/admin/addedproducts', addProductsRouter);
@@ -44,6 +44,9 @@ app.use('/admin/delete',deleteProductRouter);
 app.use('/user/signup',signupRouter);
 app.use("/user/signup/signupData",signupRouter)
 app.use("/user/signup/:signupSuccess",userRouter)
+app.use("/user/login",loginRouter)
+// app.use("/user/login/loginData",loginRouter)
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

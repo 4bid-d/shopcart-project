@@ -8,7 +8,7 @@ const path = require('path')
 const mv =
 
 router.post("/", async function (req, res) {
-  let Body = req.body
+  let productsDetails = req.body
   async function run() {
     // let product 
 
@@ -18,19 +18,19 @@ router.post("/", async function (req, res) {
       if (productNumber === 0) {
         Product = await product.create({
           number: 0,
-          productName: Body.productName,
-          category: Body.category,
-          Price: Body.Price,
-          desc: Body.desc,
+          productName: productsDetails.productName,
+          category: productsDetails.category,
+          Price: productsDetails.Price,
+          desc: productsDetails.desc,
         });
       }
       else {
         Product = await product.create({
           number: productNumber,
-          productName: Body.productName,
-          category: Body.category,
-          Price: Body.Price,
-          desc: Body.desc,
+          productName: productsDetails.productName,
+          category: productsDetails.category,
+          Price: productsDetails.Price,
+          desc: productsDetails.desc,
         });
       }
       await Product.save()
