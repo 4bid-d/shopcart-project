@@ -1,19 +1,18 @@
 var createError = require('http-errors');
 var express = require('express');
+require('dotenv/config');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var userRouter = require('./routes/userIndex');
-var newProductsRouter = require('./routes/adminIndex');
-//mongoose requred
+var adminRouter = require('./routes/adminIndex');
 var mongoose = require('mongoose');
-//var db = require('./config/mongoConnection');
-const { extname } = require('path');
 const { engine } = require ('express-handlebars');
 var fileUpload = require('express-fileupload')
-require('dotenv/config');
-//var hbs=require('express-handlebars');
+var session = require('express-session')
+
 var app = express();
+
 mongoose.connect('mongodb://localhost:27017/shopping',()=>console.log('connected'))
 
 // view engine setup
@@ -26,13 +25,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload());
+app.use(session({secret:"key",cookie:{maxAge:600000}}))
 
 
-
+app.use('^/$|(user)?', userRouter);
 app.use('/user', userRouter);
-app.use('/admin', newProductsRouter);
-app.use("/user/signup/:signupSuccess",userRouter)
-// // app.use("/user/login/loginData",loginRouter)
+app.use('/admin', adminRouter);
+// app.use("/user/signup/signupData",userRouter)
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
