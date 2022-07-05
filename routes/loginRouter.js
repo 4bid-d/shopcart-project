@@ -12,10 +12,16 @@ router.get("/", (req, res) => {
 router.post('/', async (req, res) => {
 
     const loginDetails = req.body
-    const emailChecking = await User.findOne({ email: loginDetails.email })
-    if (emailChecking) {
+    console.log(loginDetails);
+    const checkEmailInDb = await User.findOne({ email: loginDetails.email })
+    if (checkEmailInDb) {
         try {
-            
+            comparePassword = await bcrypt.compare(loginDetails.pass,checkEmailInDb.passWord)
+            if(comparePassword){
+                console.log("login success");
+            }else{
+                console.log("login failed");
+            }
         } catch (err) {
             console.log(err);
         }
