@@ -7,7 +7,36 @@ const fs = require('fs')
 const path = require('path')
 const mv =
 
-router.post("/", async function (req, res) {
+/* GET users listing. */
+router.get('/addedproducts', async function (req, res) {
+  let products
+  try {
+    let productsFromDatabase = await product.find({ admin: "true" })
+    products = productsFromDatabase
+
+  } catch (err) {
+    console.error(err)
+  }
+  await res.render('admin-added-products', { title: 'Add products', products, admin: true });
+})
+
+router.post("/delete", async (req, res) => {
+
+  const deleteRequestId = req.body.id
+  deleteRequestDoc()
+  async function deleteRequestDoc() {
+
+      try {
+          await product.deleteOne({ number: deleteRequestId })
+
+      } catch (err) {
+          console.error(err)
+      }
+
+  }
+})
+
+router.post("/upload", async function (req, res) {
   let productsDetails = req.body
   async function run() {
     // let product 
@@ -42,7 +71,7 @@ router.post("/", async function (req, res) {
   
         // })
         await imageSendForProduct.mv(`./public/images/product-images/${productGeneratedId}.jpg`,async ()=>{
-          await console.log('file uploaded')
+        
         })
       } catch (err) {
         console.log(err)
