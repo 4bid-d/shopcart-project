@@ -6,7 +6,6 @@ let Products
 const bcrypt = require('bcrypt');
 const User = require('../schemas/userModel')
 
-// app.use('/signup/signupData',signupRouter)
 
 /* GET home page. */
 router.get('/', async function (req, res, next) {
@@ -16,7 +15,7 @@ router.get('/', async function (req, res, next) {
   Products = await product.find({ admin: "true" })
 
   if (userSession.loggedIn) {
-    res.render('user', { title: 'Home', userDetail, Products, user: true, admin: false, notSignedUser: false, inAnyForm: false });
+    res.render('user', { title: 'Home', userDetail, Products, admin: false,user: true, notSignedUser: false, inAnyForm: false });
   } else {
     res.render('user', { title: 'Home', Products, user: false, admin: false, notSignedUser: true, inAnyForm: false });
   }
@@ -32,11 +31,12 @@ router.get('/signup', (req, res) => {
 router.get('/login', (req, res) => {
 
   const session = req.session
-  console.log(session)
+  
 
   if (session.user) {
     session.loggedIn = true
     res.redirect('/user')
+    console.log(session)
 
   } else {
     res.render('login', { title: 'login', inAnyForm: true },)

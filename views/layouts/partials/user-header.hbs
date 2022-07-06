@@ -20,11 +20,11 @@
             <a class="nav-link text-dark " style="" href="/user">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark " style="" href={{#if user}} "/user/cart" {{else}} "/user/signup"
+            <a class="nav-link text-dark " style="" href={{#if notSignedUser}} "/user/signup" {{else}} "/user/cart"
               {{/if}}>Cart</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark " style="" href={{#if user}} "/user/orders" {{else}} "/user/signup"
+            <a class="nav-link text-dark " style="" href={{#if notSignedUser}} "/user/signup" {{else}} "/user/orders"
               {{/if}}>Your Orders</a>
           </li>
           {{!-- <li class="nav-item dropdown">
@@ -51,10 +51,10 @@
         <div class="dropdown show">
           <a class="btn btn-secondary dropdown-toggle ml-5" href="#" role="button" id="dropdownMenuLink"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{#if user}}
-              {{userDetail.firstName }}{{userDetail.LastName}}
-              {{else}}
+            {{#if notSignedUser}}
               Account 
+              {{else}}
+              {{userDetail.firstName }}{{userDetail.LastName}}
             {{/if}}
           </a>
           {{!-- {{#if inAnyForm}} --}}
