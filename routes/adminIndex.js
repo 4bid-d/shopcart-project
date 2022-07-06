@@ -20,14 +20,61 @@ router.get('/addedproducts', async function (req, res) {
   await res.render('admin-added-products', { title: 'Add products', products, admin: true });
 })
 
-router.post("/delete", async (req, res) => {
+router.get("/delete/:odjId", async (req, res) => {
 
-  const deleteRequestId = req.body.id
+  const deleteProductId = req.params.odjId
   deleteRequestDoc()
   async function deleteRequestDoc() {
 
       try {
-          await product.deleteOne({ number: deleteRequestId })
+          await product.deleteOne({ _id: deleteProductId })
+          res.redirect('/admin/addedproducts')
+
+      } catch (err) {
+          console.error(err)
+      }
+
+  }
+})
+
+router.get("/edit/:objId", async (req, res) => {
+
+  const editProductId = req.params.objId
+  renderRequestDoc()
+  async function renderRequestDoc() {
+
+      try {
+          foundedDoc = await product.findOne({ _id: editProductId })
+          res.render('editForm',{title:'updateProducts',admin:true,foundedDoc})
+          console.log("get");
+      } catch (err) {
+          console.error(err)
+      }
+
+  }
+})
+
+router.post("/edited/:objId", async (req, res) => {
+
+  const userEditedProductId = req.params.objId
+  const userEditedProduct   = req.body
+  
+  updateRequestDoc()
+  async function updateRequestDoc() {
+
+      try {
+
+          foundedDoc = await product.findOne({ _id: userEditedProductId })
+          console.log(foundedDoc)
+          updateDoc = await product.updateOne({_id:userEditedProductId},{
+              productName: userEditedProduct.productName,
+              category: userEditedProduct.category,
+              Price: userEditedProduct.Price,
+              desc: userEditedProduct.desc,
+              updatedDate:Date.now()
+            })
+            res.redirect('/admin/addedproducts')
+
 
       } catch (err) {
           console.error(err)

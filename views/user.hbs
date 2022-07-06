@@ -26,7 +26,7 @@
               <h5 class="card-title">{{this.productName}}</h5>
               <h6 class="card-title">{{this.Price}}</h6>
               <p class="card-text">{{this.desc}}</p>
-              <a href={{#if notSignedUser}} "/user/signup" {{else}} "/user/addToCart" {{/if}} class="btn btn-success">Add to cart</a>
+              <a href={{#if notSignedUser}} "/user/login" {{else}} "/user/addToCart" {{/if}} class="btn btn-success">Add to cart</a>
             </div>
           </div>
         </div>

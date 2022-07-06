@@ -5,13 +5,20 @@ const product = require('../schemas/productModel');
 let Products
 const bcrypt = require('bcrypt');
 const User = require('../schemas/userModel')
-
+const verifyLogin = (req,res)=>{
+  const session = req.session
+  if(session.loggedIn){
+      return true
+  }else{
+      res.redirect('login')
+  }
+}
 
 /* GET home page. */
 router.get('/', async function (req, res, next) {
-  let userSession = req.session
-  let userDetail = userSession.user
-
+  const userSession = req.session
+  const userDetail = userSession.user
+  
   Products = await product.find({ admin: "true" })
 
   if (userSession.loggedIn) {
@@ -22,6 +29,24 @@ router.get('/', async function (req, res, next) {
   next
 });
 
+router.get('/cart',(req,res)=>{
+  
+  const userDetail= req.session.user
+  const verifyUser = verifyLogin(req,res)
+  if (verifyUser){
+  
+  res.render('cart',{title:"Cart",userDetail,admin: false,user: true, notSignedUser: false, inAnyForm: false})
+  }
+})
+
+router.get('/myorders',(req,res)=>{
+  
+  const userDetail= req.session.user
+  const verifyUser = verifyLogin(req,res)
+  if (verifyUser){
+  res.render('orders',{title:"My orders",userDetail,admin: false,user: true, notSignedUser: false, inAnyForm: false})
+  }
+})
 
 router.get('/signup', (req, res) => {
 
@@ -31,12 +56,11 @@ router.get('/signup', (req, res) => {
 router.get('/login', (req, res) => {
 
   const session = req.session
-  
 
   if (session.user) {
     session.loggedIn = true
     res.redirect('/user')
-    console.log(session)
+   
 
   } else {
     res.render('login', { title: 'login', inAnyForm: true },)
