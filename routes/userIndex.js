@@ -5,52 +5,58 @@ const product = require('../schemas/productModel');
 let Products
 const bcrypt = require('bcrypt');
 const User = require('../schemas/userModel')
-const verifyLogin = (req,res)=>{
+
+//to verify the user session valid or not to find userlogin
+const verifyLogin = (req, res) => {
   const session = req.session
-  if(session.loggedIn){
-      return true
-  }else{
-      res.redirect('login')
+  if (session.loggedIn) {
+    return true
+  } else {
+    res.redirect('login')
   }
 }
 
-/* GET home page. */
+/* GET user page. */
 router.get('/', async function (req, res, next) {
+
+  
   const userSession = req.session
   const userDetail = userSession.user
-  
-  Products = await product.find({ admin: "true" })
 
+  Products = await product.find({ admin: "true" })
+  //for turn displaying user details by checking loggedin variable in session
   if (userSession.loggedIn) {
-    res.render('user', { title: 'Home', userDetail, Products, admin: false,user: true, notSignedUser: false, inAnyForm: false });
+    res.render('user/userHome', { title: 'Home', userDetail, Products, admin: false, user: true, notSignedUser: false, inAnyForm: false });
   } else {
-    res.render('user', { title: 'Home', Products, user: false, admin: false, notSignedUser: true, inAnyForm: false });
+    res.render('user/userHome', { title: 'Home', Products, user: false, admin: false, notSignedUser: true, inAnyForm: false });
   }
   next
 });
 
-router.get('/cart',(req,res)=>{
-  
-  const userDetail= req.session.user
-  const verifyUser = verifyLogin(req,res)
-  if (verifyUser){
-  
-  res.render('cart',{title:"Cart",userDetail,admin: false,user: true, notSignedUser: false, inAnyForm: false})
+//cart router
+router.get('/cart', (req, res) => {
+ 
+  const userDetail = req.session.user
+//  calling varify login function to verify user
+  const verifyUser = verifyLogin(req, res)
+  if (verifyUser) {
+
+    res.render('user/cart', { title: "Cart", userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
   }
 })
 
-router.get('/myorders',(req,res)=>{
-  
-  const userDetail= req.session.user
-  const verifyUser = verifyLogin(req,res)
-  if (verifyUser){
-  res.render('orders',{title:"My orders",userDetail,admin: false,user: true, notSignedUser: false, inAnyForm: false})
+router.get('/myorders', (req, res) => {
+
+  const userDetail = req.session.user
+  const verifyUser = verifyLogin(req, res)
+  if (verifyUser) {
+    res.render('user/orders', { title: "My orders", userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
   }
 })
 
 router.get('/signup', (req, res) => {
 
-  res.render('signup', { title: 'signup', inAnyForm: true })
+  res.render('user/signup', { title: 'signup', inAnyForm: true })
 })
 
 router.get('/login', (req, res) => {
@@ -60,20 +66,20 @@ router.get('/login', (req, res) => {
   if (session.user) {
     session.loggedIn = true
     res.redirect('/user')
-   
+
 
   } else {
-    res.render('login', { title: 'login', inAnyForm: true },)
+    res.render('user/login', { title: 'login', inAnyForm: true },)
   }
 
 })
-router.get("/logout", async(req, res) => {
+router.get("/logout", async (req, res) => {
   req.session.loggedIn = false
   res.redirect('/user')
 
 })
 
-router.post('/login', async (req, res) => { 
+router.post('/login', async (req, res) => {
   let loginError = ""
   const loginDetails = req.body
   let loginStatus
@@ -87,11 +93,11 @@ router.post('/login', async (req, res) => {
         serverResponseLogin.user = findAndcheckEmail
         serverResponseLogin.status = true
       } else {
-        loginError =  "invalid password" 
+        loginError = "invalid password"
         req.session.loggedIn = false
         serverResponseLogin.status = false
         console.log("login failed1");
-        
+
       }
     } catch (err) {
       console.log(err);
@@ -103,14 +109,14 @@ router.post('/login', async (req, res) => {
       } else {
         req.session.loggedIn = false
         // res.redirect('login')
-        res.render('login',{loginError})
+        res.render('user/login', { loginError })
       }
     }
   } else {
-    loginError="Invalid email ,or Please signup"
+    loginError = "Invalid email ,or Please signup"
     req.session.loggedIn = false
     serverResponseLogin.status = false
-    res.render('login', {loginError})
+    res.render('user/login', { loginError })
   }
 })
 
@@ -126,7 +132,7 @@ router.post('/signup/signupData', async (req, res) => {
   if (emailChecking) {
     signInError = "You are already a member please login"
     signupStatus = false
-    res.render('signup',{signInError})
+    res.render('user/signup', { signInError })
   } else {
     try {
       userData = await User.create({

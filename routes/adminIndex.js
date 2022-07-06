@@ -7,18 +7,18 @@ const fs = require('fs')
 const path = require('path')
 const mv =
 
-/* GET users listing. */
-router.get('/addedproducts', async function (req, res) {
-  let products
-  try {
-    let productsFromDatabase = await product.find({ admin: "true" })
-    products = productsFromDatabase
+  /* GET users listing. */
+  router.get('/addedproducts', async function (req, res) {
+    let products
+    try {
+      let productsFromDatabase = await product.find({ admin: "true" })
+      products = productsFromDatabase
 
-  } catch (err) {
-    console.error(err)
-  }
-  await res.render('admin-added-products', { title: 'Add products', products, admin: true });
-})
+    } catch (err) {
+      console.error(err)
+    }
+    await res.render('admin/admin-added-products', { title: 'Add products', products, admin: true });
+  })
 
 router.get("/delete/:odjId", async (req, res) => {
 
@@ -26,13 +26,13 @@ router.get("/delete/:odjId", async (req, res) => {
   deleteRequestDoc()
   async function deleteRequestDoc() {
 
-      try {
-          await product.deleteOne({ _id: deleteProductId })
-          res.redirect('/admin/addedproducts')
+    try {
+      await product.deleteOne({ _id: deleteProductId })
+      res.redirect('/admin/addedproducts')
 
-      } catch (err) {
-          console.error(err)
-      }
+    } catch (err) {
+      console.error(err)
+    }
 
   }
 })
@@ -43,13 +43,13 @@ router.get("/edit/:objId", async (req, res) => {
   renderRequestDoc()
   async function renderRequestDoc() {
 
-      try {
-          foundedDoc = await product.findOne({ _id: editProductId })
-          res.render('editForm',{title:'updateProducts',admin:true,foundedDoc})
-          console.log("get");
-      } catch (err) {
-          console.error(err)
-      }
+    try {
+      foundedDoc = await product.findOne({ _id: editProductId })
+      res.render('user/editForm', { title: 'updateProducts', admin: true, foundedDoc })
+      console.log("get");
+    } catch (err) {
+      console.error(err)
+    }
 
   }
 })
@@ -57,28 +57,28 @@ router.get("/edit/:objId", async (req, res) => {
 router.post("/edited/:objId", async (req, res) => {
 
   const userEditedProductId = req.params.objId
-  const userEditedProduct   = req.body
-  
+  const userEditedProduct = req.body
+
   updateRequestDoc()
   async function updateRequestDoc() {
 
-      try {
+    try {
 
-          foundedDoc = await product.findOne({ _id: userEditedProductId })
-          console.log(foundedDoc)
-          updateDoc = await product.updateOne({_id:userEditedProductId},{
-              productName: userEditedProduct.productName,
-              category: userEditedProduct.category,
-              Price: userEditedProduct.Price,
-              desc: userEditedProduct.desc,
-              updatedDate:Date.now()
-            })
-            res.redirect('/admin/addedproducts')
+      foundedDoc = await product.findOne({ _id: userEditedProductId })
+      console.log(foundedDoc)
+      updateDoc = await product.updateOne({ _id: userEditedProductId }, {
+        productName: userEditedProduct.productName,
+        category: userEditedProduct.category,
+        Price: userEditedProduct.Price,
+        desc: userEditedProduct.desc,
+        updatedDate: Date.now()
+      })
+      res.redirect('/admin/addedproducts')
 
 
-      } catch (err) {
-          console.error(err)
-      }
+    } catch (err) {
+      console.error(err)
+    }
 
   }
 })
@@ -112,13 +112,13 @@ router.post("/upload", async function (req, res) {
       await Product.save()
       const imageSendForProduct = await req.files.image
       const productGeneratedId = await Date.now()
-       try {
+      try {
         // fs.writeFile("../public/images/" + productGeneratedId + ".jpg", imageSendForProduct, () => {
         //   console.log("file insertion completed")
-  
+
         // })
-        await imageSendForProduct.mv(`./public/images/product-images/${productGeneratedId}.jpg`,async ()=>{
-        
+        await imageSendForProduct.mv(`./public/images/product-images/${productGeneratedId}.jpg`, async () => {
+
         })
       } catch (err) {
         console.log(err)
@@ -129,14 +129,14 @@ router.post("/upload", async function (req, res) {
   }
   run()
 
-  await res.render('addProductForm', { title: 'Products Form', admin: true });
+  await res.render('admin/addProductForm', { title: 'Products Form', admin: true });
 
 });
 
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-  res.render('addProductForm', { title: 'Products Form', admin: true });
+  res.render('admin/addProductForm', { title: 'Products Form', admin: true });
 })
 
 module.exports = router;

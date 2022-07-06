@@ -36,7 +36,7 @@
                         <td>{{this.category}}</td>
                         <td>{{this.desc}}</td>
                         <td><a href="edit/{{this._id}}">Edit</a></td>                    
-                        <td><a href="delete/{{this._id}}">Delete</a></td>
+                        <td><a href="delete/{{this._id}}" onclick="return confirm('Are you really want to delete {{this.productName}}')">Delete</a></td>
 
 
 
