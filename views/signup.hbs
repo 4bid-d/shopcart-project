@@ -9,6 +9,7 @@
             <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Signup Form</h3>
             <form method="post" action="/user/signup/signupData">
 
+              <div><p style="color: green;font-size:large;">{{signInError}}</p></div>
               <div class="row">
                 <div class="col-md-12 mb-4">
 
@@ -45,13 +46,12 @@
 
                 </div>
               </div>
-
             <div class="row">
                 <div class="col-md-12 pt-2">
                 <input class="btn btn-primary btn-lg" type="submit" value="Submit" />
               </div>
             </div>
-             <h6>Already a member? <a href="login">login</a></h6>
+             <h6>Already a member? <a href="/user/login">login</a></h6>
             </form>
           </div>
         </div>
