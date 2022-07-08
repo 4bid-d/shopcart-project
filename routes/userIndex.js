@@ -1,10 +1,11 @@
 var express = require('express');
 var app = express();
 var router = express.Router();
-const product = require('../schemas/productModel');
+const PRODUCT = require('../schemas/productModel');
 let Products
 const bcrypt = require('bcrypt');
-const User = require('../schemas/userModel')
+const USERMODEL = require('../schemas/userModel')
+const  CART= require('../schemas/cartModel');
 
 //to verify the user session valid or not to find userlogin
 const verifyLogin = (req, res) => {
@@ -12,7 +13,7 @@ const verifyLogin = (req, res) => {
   if (session.loggedIn) {
     return true
   } else {
-    res.redirect('login')
+    res.redirect('/login')
   }
 }
 
@@ -23,7 +24,7 @@ router.get('/', async function (req, res, next) {
   const userSession = req.session
   const userDetail = userSession.user
 
-  Products = await product.find({ admin: "true" })
+  Products = await PRODUCT.find({ admin: "true" })
   //for turn displaying user details by checking loggedin variable in session
   if (userSession.loggedIn) {
     res.render('user/userHome', { title: 'Home', userDetail, Products, admin: false, user: true, notSignedUser: false, inAnyForm: false });
@@ -34,15 +35,50 @@ router.get('/', async function (req, res, next) {
 });
 
 //cart router
-router.get('/cart', (req, res) => {
+router.get('/cart', async(req, res) => {
  
   const userDetail = req.session.user
+
 //  calling varify login function to verify user
+
   const verifyUser = verifyLogin(req, res)
   if (verifyUser) {
 
-    res.render('user/cart', { title: "Cart", userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
-  }
+  let requestedUserCart  = await CART.find({userEmail:userDetail.email})
+  res.render('user/cart', { title: "Cart",requestedUserCart, userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
+ 
+}
+})
+
+//addtocart router
+router.get('/addToCart/:proId', async(req, res) => {
+ 
+  const productId = req.params.proId
+  const userDetail = req.session.user
+
+//  calling varify login function to verify user
+
+  const verifyUser = verifyLogin(req, res)
+  if (verifyUser) {
+
+    let selectedProduct  = await PRODUCT.findOne({_id:productId}) 
+    let checkingForSameProduct = await CART.findOne({cartKey:`${userDetail.email}_${selectedProduct.productName}`})
+    if(checkingForSameProduct){
+      console.log("its already there")
+      console.log(userDetail)
+      res.redirect('/user/cart')
+    }else{
+    addToCart = await CART.create({
+      cartKey:`${userDetail.email}_${selectedProduct.productName}`,
+      userEmail:userDetail.email,
+      productName:selectedProduct.productName,
+      catogory:selectedProduct.category,
+      Price:selectedProduct.Price,
+      desc:selectedProduct.desc
+
+    })
+    res.redirect('/user')
+  }}
 })
 
 router.get('/myorders', (req, res) => {
@@ -75,6 +111,7 @@ router.get('/login', (req, res) => {
 })
 router.get("/logout", async (req, res) => {
   req.session.loggedIn = false
+  req.session.destroy()
   res.redirect('/user')
 
 })
@@ -84,7 +121,7 @@ router.post('/login', async (req, res) => {
   const loginDetails = req.body
   let loginStatus
   let serverResponseLogin = {}
-  const findAndcheckEmail = await User.findOne({ email: loginDetails.email })
+  const findAndcheckEmail = await USERMODEL.findOne({ email: loginDetails.email })
   if (findAndcheckEmail) {
     try {
       comparePassword = await bcrypt.compare(loginDetails.pass, findAndcheckEmail.passWord)
@@ -127,7 +164,7 @@ router.post('/signup/signupData', async (req, res) => {
   const bycryptedPass = await bcrypt.hash(signupDetails.pass, 10)
   let signupStatus = false
   let serverResponseSignup = {}
-  var emailChecking = await User.findOne({ email: signupDetails.email })
+  var emailChecking = await USERMODEL.findOne({ email: signupDetails.email })
 
   if (emailChecking) {
     signInError = "You are already a member please login"
@@ -135,7 +172,7 @@ router.post('/signup/signupData', async (req, res) => {
     res.render('user/signup', { signInError })
   } else {
     try {
-      userData = await User.create({
+      userData = await USERMODEL.create({
         firstName: signupDetails.fName,
         LastName: signupDetails.lName,
         email: signupDetails.email,
@@ -147,7 +184,7 @@ router.post('/signup/signupData', async (req, res) => {
       console.log(err)
     } finally {
       if (signupStatus) {
-        let dbSession = await User.findOne({ email: signupDetails.email })
+        let dbSession = await USERMODEL.findOne({ email: signupDetails.email })
         req.session.loggedIn = true
         req.session.user = dbSession
         res.redirect('/user')

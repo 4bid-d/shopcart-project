@@ -73,6 +73,7 @@ router.post("/edited/:objId", async (req, res) => {
         desc: userEditedProduct.desc,
         updatedDate: Date.now()
       })
+      /*WRITE FUNCTION FOR UPDATING IMAGEFILE */
       res.redirect('/admin/addedproducts')
 
 
@@ -85,7 +86,7 @@ router.post("/edited/:objId", async (req, res) => {
 
 router.post("/upload", async function (req, res) {
   let productsDetails = req.body
-  async function run() {
+  async function productUpload() {
     // let product 
 
     try {
@@ -113,6 +114,8 @@ router.post("/upload", async function (req, res) {
       const imageSendForProduct = await req.files.image
       const productGeneratedId = await Date.now()
       try {
+
+        /* FOR UPLOADING IMAGEFILE */
         // fs.writeFile("../public/images/" + productGeneratedId + ".jpg", imageSendForProduct, () => {
         //   console.log("file insertion completed")
 
@@ -127,7 +130,7 @@ router.post("/upload", async function (req, res) {
       console.log(err)
     }
   }
-  run()
+  productUpload()
 
   await res.render('admin/addProductForm', { title: 'Products Form', admin: true });
 

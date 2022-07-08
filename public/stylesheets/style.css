@@ -1,9 +1,10 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Montserrat');
  #body{
    background: fixed;
    padding:px;
    background-color:rgb(211, 222, 214,0.5);
-  font: 14px " sans-serif";
+   font-family: "Montserrat",sans-serif;
+   /* font: 14px " "; */
 }
 
 a {
@@ -14,7 +15,7 @@ a {
  
   
   background-color: #ffff; 
-  color:black;
+  color:#ffff;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
