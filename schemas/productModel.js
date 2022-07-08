@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
+    
     admin:{
         type:String,
         default:true,
+        immutable:true
+    },
+    userKey:{
+        type:String,
         immutable:true
     },
     number:{

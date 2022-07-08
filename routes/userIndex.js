@@ -41,8 +41,8 @@ router.get('/cart', async(req, res) => {
 
 //  calling varify login function to verify user
 
-  const verifyUser = verifyLogin(req, res)
-  if (verifyUser) {
+     verifyLogin(req, res)
+  if (verifyLogin(req, res)) {
 
   let requestedUserCart  = await CART.find({userEmail:userDetail.email})
   res.render('user/cart', { title: "Cart",requestedUserCart, userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
@@ -58,8 +58,8 @@ router.get('/addToCart/:proId', async(req, res) => {
 
 //  calling varify login function to verify user
 
-  const verifyUser = verifyLogin(req, res)
-  if (verifyUser) {
+     
+  if (verifyLogin(req, res)) {
 
     let selectedProduct  = await PRODUCT.findOne({_id:productId}) 
     let checkingForSameProduct = await CART.findOne({cartKey:`${userDetail.email}_${productId}`})
@@ -70,6 +70,7 @@ router.get('/addToCart/:proId', async(req, res) => {
     }else{
     addToCart = await CART.create({
       cartKey:`${userDetail.email}_${productId}`,
+      productId:productId,
       userEmail:userDetail.email,
       productName:selectedProduct.productName,
       catogory:selectedProduct.category,
@@ -84,15 +85,22 @@ router.get('/addToCart/:proId', async(req, res) => {
 router.get('/myorders', (req, res) => {
 
   const userDetail = req.session.user
-  const verifyUser = verifyLogin(req, res)
-  if (verifyUser) {
+  
+  if (verifyLogin(req, res)) {
     res.render('user/orders', { title: "My orders", userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
   }
 })
 
 router.get('/signup', (req, res) => {
 
-  res.render('user/signup', { title: 'signup', inAnyForm: true })
+  res.render('user/signup', { title: 'profile', inAnyForm: true })
+})
+router.get('/profile', async(req, res) => {
+  let userDetail= req.session.user
+if(verifyLogin(req,res)){
+  let userData = await USERMODEL.findOne({email:userDetail.email})
+  res.render('user/profile', { title: 'Profile', inAnyForm: true,userData })
+}
 })
 
 router.get('/login', (req, res) => {

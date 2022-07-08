@@ -5,6 +5,7 @@ const cartSchema = new mongoose.Schema({
         type:String,
         immutable:true
     },
+    productId:String,
     userEmail :{
         type:String,
         immutable:true,

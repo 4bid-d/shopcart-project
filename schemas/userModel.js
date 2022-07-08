@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     user: {
         type: String,
         default: true,
-        immutable: true
+        immutable: true,
     },
     firstName: {
         type: String
@@ -17,6 +17,12 @@ const userSchema = new mongoose.Schema({
     },
     passWord: {
         type: String
+    },
+    address:{
+        type:String
+    },
+    phone:{
+        type:Number
     },
     dateCreated: {
         type: Date,
