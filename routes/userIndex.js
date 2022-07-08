@@ -54,7 +54,7 @@ router.get('/cart', async(req, res) => {
 router.get('/addToCart/:proId', async(req, res) => {
  
   const productId = req.params.proId
-  const userDetail = req.session.user
+  const userDetail = req.session.user 
 
 //  calling varify login function to verify user
 
@@ -62,14 +62,14 @@ router.get('/addToCart/:proId', async(req, res) => {
   if (verifyUser) {
 
     let selectedProduct  = await PRODUCT.findOne({_id:productId}) 
-    let checkingForSameProduct = await CART.findOne({cartKey:`${userDetail.email}_${selectedProduct.productName}`})
+    let checkingForSameProduct = await CART.findOne({cartKey:`${userDetail.email}_${productId}`})
     if(checkingForSameProduct){
       console.log("its already there")
       console.log(userDetail)
       res.redirect('/user/cart')
     }else{
     addToCart = await CART.create({
-      cartKey:`${userDetail.email}_${selectedProduct.productName}`,
+      cartKey:`${userDetail.email}_${productId}`,
       userEmail:userDetail.email,
       productName:selectedProduct.productName,
       catogory:selectedProduct.category,

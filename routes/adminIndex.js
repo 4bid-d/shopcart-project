@@ -5,8 +5,16 @@ const product = require('../schemas/productModel');
 // var mongoose = require('mongoose');
 const fs = require('fs')
 const path = require('path')
-const mv =
-
+// const mv = require()
+//to verify the user session valid or not to find userlogin
+const verifyLogin = (req, res) => {
+  const session = req.session
+  if (session.loggedIn) {
+    return true
+  } else {
+    res.redirect('/login')
+  }
+}
   /* GET users listing. */
   router.get('/addedproducts', async function (req, res) {
     let products
@@ -138,8 +146,12 @@ router.post("/upload", async function (req, res) {
 
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.render('admin/addProductForm', { title: 'Products Form', admin: true });
+router.get('/', function (req, res) {
+  let userDetails =req.session.user
+  let verifyUser = verifyLogin(req,res)
+  if(verifyUser){
+  res.render('admin/addProductForm', { title: 'Products Form',userDetails, admin: true });
+  }
 })
 
 module.exports = router;

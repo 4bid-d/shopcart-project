@@ -47,7 +47,25 @@
             <a class="nav-link text-light " href="#" tabindex="-1" ></a>
           </li>
         </ul>
-       
+
+    
+        <div class="dropdown show">
+          <a class="btn btn-secondary dropdown-toggle ml-5" href="#" role="button" id="dropdownMenuLink"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            
+              {{userDetail.firstName }}{{userDetail.LastName}}
+
+          </a>
+          {{!-- {{#if inAnyForm}} --}}
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              
+            <a class="dropdown-item" href="/user/profile">Profile</a>
+            <a class="dropdown-item" href="/user/logout">Logout</a>
+
+          </div>
+          {{!-- {{/if}} --}}
+        </div>
+
       </div>
     </nav>
     </div>
