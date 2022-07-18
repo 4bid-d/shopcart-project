@@ -10,11 +10,11 @@ const cartSchema = new mongoose.Schema({
         type:String,
         immutable:true,
     },
-    
-    productName:String,
-    catogory:String,
-    Price: Number,
-    desc:String,
+
+    quantity:{
+        type:Number,
+        default:1
+    }
 
     
 })

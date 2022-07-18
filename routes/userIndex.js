@@ -6,6 +6,7 @@ let Products
 const bcrypt = require('bcrypt');
 const USERMODEL = require('../schemas/userModel')
 const  CART= require('../schemas/cartModel');
+const { ObjectId } = require('mongodb');
 
 //to verify the user session valid or not to find userlogin
 const verifyLogin = (req, res) => {
@@ -41,11 +42,17 @@ router.get('/cart', async(req, res) => {
 
 //  calling varify login function to verify user
 
-     verifyLogin(req, res)
+    //  verifyLogin(req, res)
   if (verifyLogin(req, res)) {
-
+  let productArray = [] 
   let requestedUserCart  = await CART.find({userEmail:userDetail.email})
-  res.render('user/cart', { title: "Cart",requestedUserCart, userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
+
+  for(let i=0;i<requestedUserCart.length;i++){
+  let product = await PRODUCT.findOne({_id:ObjectId(requestedUserCart[i].productId)})
+  productArray.push(product)
+  }
+
+  res.render('user/cart', { title: "Cart",productArray, userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
  
 }
 })
@@ -65,22 +72,27 @@ router.get('/addToCart/:proId', async(req, res) => {
     let checkingForSameProduct = await CART.findOne({cartKey:`${userDetail.email}_${productId}`})
     if(checkingForSameProduct){
       console.log("its already there")
-      console.log(userDetail)
       res.redirect('/user/cart')
     }else{
     addToCart = await CART.create({
       cartKey:`${userDetail.email}_${productId}`,
       productId:productId,
       userEmail:userDetail.email,
-      productName:selectedProduct.productName,
-      catogory:selectedProduct.category,
-      Price:selectedProduct.Price,
-      desc:selectedProduct.desc
+      
 
     })
     res.redirect('/user')
   }}
 })
+router.get('/quantity/:id',async(req,res)=>{
+
+  const productId = req.params.proId
+  const userDetail = req.session.user 
+  const updateIt = await CART.findOne({cartKey:`${userDetail.email}_${productId}`})
+  console.log(updateIt);
+
+})
+
 
 router.get('/myorders', (req, res) => {
 
