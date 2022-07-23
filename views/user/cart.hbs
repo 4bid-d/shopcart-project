@@ -32,7 +32,7 @@
       <section>
         <div class="row mb-4 d-flex justify-content-between align-items-center">
           <div class="col-md-2 col-lg-2 col-xl-2">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img5.webp"
+            <img style= "height: 150px;width:300px" src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img5.webp"
               class="img-fluid rounded-3" alt="Cotton T-shirt">
           </div>
           <div class="col-md-3 col-lg-3 col-xl-3">
@@ -72,39 +72,8 @@
 
 
 <script>
-      function xhrUpdate(id) {
-        const input = document.querySelector("#form1")
-        var xmlhttp = new XMLHttpRequest();
-        var url = `/quantity/${id}/${input.value}`;
-
-        xmlhttp.onreadystatechange = function () {
-          if (this.readyState == 4 && this.status == 200) {
-            var myArr = JSON.parse(this.responseText);
-            myFunction(myArr);
-          }
-        };
-        xmlhttp.open("GET", url, true);
-        xmlhttp.send();
-        console.log('reqsent')
       
-
-      }
-    async function fetchData(id) {
-    const input = document.querySelector("#form1")
-    return new Promise((resolve, reject) => {
-        let xhr = new XMLHttpRequest()
-
-        xhr.open('GET', `quantity/${id}/${input.value}`, true)
-        xhr.onload = function () {
-            if (xhr.status != 200) { 
-                alert(`Error ${xhr.status}: ${xhr.statusText}`);
-            } else { 
-                data = JSON.parse(this.response)
-
-                  
-    });
-      xhr.send()
-            }
+  `
  
     </script>
 

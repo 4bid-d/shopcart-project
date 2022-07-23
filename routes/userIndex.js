@@ -49,10 +49,12 @@ router.get('/cart', async(req, res) => {
 
   for(let i=0;i<requestedUserCart.length;i++){
   let product = await PRODUCT.findOne({_id:ObjectId(requestedUserCart[i].productId)})
+  let quantity = requestedUserCart[i].quantity
   productArray.push(product)
+  productArray[i].quantity = quantity
   }
 
-  res.render('user/cart', { title: "Cart",productArray, userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
+  res.render('user/cart', { title: "Cart",productArray, userDetail, admin: false,  notSignedUser: false, inAnyForm: false })
  
 }
 })
@@ -69,13 +71,14 @@ router.get('/addToCart/:proId', async(req, res) => {
   if (verifyLogin(req, res)) {
 
     let selectedProduct  = await PRODUCT.findOne({_id:productId}) 
-    let checkingForSameProduct = await CART.findOne({cartKey:`${userDetail.email}_${productId}`})
+    let checkingForSameProduct = await CART.findOne({userEmail:userDetail.email,productId:productId})
+
+
     if(checkingForSameProduct){
-      console.log("its already there")
       res.redirect('/user/cart')
     }else{
     addToCart = await CART.create({
-      cartKey:`${userDetail.email}_${productId}`,
+      // cartKey:`${userDetail.email}_${productId}`,
       productId:productId,
       userEmail:userDetail.email,
       
@@ -84,12 +87,14 @@ router.get('/addToCart/:proId', async(req, res) => {
     res.redirect('/user')
   }}
 })
-router.get('/quantity/:id',async(req,res)=>{
+router.get('/quantity/:id/:updateVal',async(req,res)=>{
 
   const productId = req.params.proId
+  const updateValue = req.params.updateVal
   const userDetail = req.session.user 
-  const updateIt = await CART.findOne({cartKey:`${userDetail.email}_${productId}`})
+  const updateIt = await CART.findOne({userEmail:userDetail.email,productId:productId})
   console.log(updateIt);
+  res.send({"update":"true"})
 
 })
 
@@ -104,9 +109,10 @@ router.get('/myorders', (req, res) => {
 })
 
 router.get('/signup', (req, res) => {
-
   res.render('user/signup', { title: 'profile', inAnyForm: true })
 })
+
+
 router.get('/profile', async(req, res) => {
   let userDetail= req.session.user
 if(verifyLogin(req,res)){
@@ -129,9 +135,10 @@ router.get('/login', (req, res) => {
   }
 
 })
+
 router.get("/logout", async (req, res) => {
   req.session.loggedIn = false
-  req.session.destroy()
+  // req.session.destroy()
   res.redirect('/user')
 
 })
@@ -146,14 +153,13 @@ router.post('/login', async (req, res) => {
     try {
       comparePassword = await bcrypt.compare(loginDetails.pass, findAndcheckEmail.passWord)
       if (comparePassword) {
-        console.log("login success");
         serverResponseLogin.user = findAndcheckEmail
         serverResponseLogin.status = true
       } else {
         loginError = "invalid password"
         req.session.loggedIn = false
         serverResponseLogin.status = false
-        console.log("login failed1");
+        
 
       }
     } catch (err) {
