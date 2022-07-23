@@ -65,14 +65,14 @@ router.get("/delete/:odjId", async (req, res) => {
 })
 
 router.get("/edit/:objId", async (req, res) => {
-
+  let userDetail = req.session.user
   const editProductId = req.params.objId
   renderRequestDoc()
   async function renderRequestDoc() {
 
     try {
       foundedDoc = await PRODUCT.findOne({ _id: editProductId })
-      res.render('user/editForm', { title: 'updateProducts', admin: true, foundedDoc })
+      res.render('user/editForm', { title: 'updateProducts', admin: true, foundedDoc,userDetail })
       
     } catch (err) {
       console.error(err)
