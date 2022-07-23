@@ -31,7 +31,7 @@ const verifyLogin = (req, res) => {
       console.error(err)
     }
   
-    await res.render('admin/admin-added-products', { title: 'Add products',userDetail, products, admin: true });
+    res.render('admin/admin-added-products', { title: 'Add products',userDetail, products, admin: true });
     }
   })
 
@@ -73,7 +73,7 @@ router.get("/edit/:objId", async (req, res) => {
     try {
       foundedDoc = await PRODUCT.findOne({ _id: editProductId })
       res.render('user/editForm', { title: 'updateProducts', admin: true, foundedDoc })
-      console.log("get");
+      
     } catch (err) {
       console.error(err)
     }
@@ -92,7 +92,7 @@ router.post("/edited/:objId", async (req, res) => {
     try {
 
       foundedDoc = await PRODUCT.findOne({ _id: userEditedProductId })
-      console.log(foundedDoc)
+      
       updateDoc = await PRODUCT.updateOne({ _id: userEditedProductId }, {
         productName: userEditedProduct.productName,
         category: userEditedProduct.category,
@@ -117,7 +117,6 @@ router.post("/upload", async function (req, res) {
 
   async function productUpload() {
     
-
     try {
       let productNumber = await PRODUCT.countDocuments({ admin: "true" })
 
@@ -146,11 +145,6 @@ router.post("/upload", async function (req, res) {
       const productGeneratedId = await Date.now()
       try {
 
-        /* FOR UPLOADING IMAGEFILE */
-        // fs.writeFile("../public/images/" + productGeneratedId + ".jpg", imageSendForProduct, () => {
-        //   console.log("file insertion completed")
-
-        // })
         await imageSendForProduct.mv(`./public/images/PRODUCT-images/${productGeneratedId}.jpg`, async () => {
 
         })
