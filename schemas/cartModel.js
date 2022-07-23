@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
-    cartKey:{
+ 
+    productId:{
         type:String,
-        immutable:true
+        immutable:true,
     },
-    productId:String,
+
     userEmail :{
         type:String,
         immutable:true,
@@ -16,7 +17,6 @@ const cartSchema = new mongoose.Schema({
         default:1
     }
 
-    
 })
 
 
