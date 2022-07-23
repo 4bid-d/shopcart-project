@@ -1,13 +1,14 @@
-
 <section class="container mt-3 pt-5">
     <h1>Login</h1>
     <hr>
     <form method="post" action="login">
-            <div><p style="color: red;">{{loginError}}</p></div>
+        <div>
+            <p style="color: red;">{{loginError}}</p>
+        </div>
         <!-- Email input -->
         <div class="form-outline mb-4">
-            <input type="email" id="form2Example1" name="email"   class="form-control" />
-            <label class="form-label" for="form2Example1"  >Email address</label>
+            <input type="email" id="form2Example1" name="email" class="form-control" />
+            <label class="form-label" for="form2Example1">Email address</label>
         </div>
 
         <!-- Password input -->
@@ -48,13 +49,45 @@
             </button>
 
             <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-twitter"></i>
+                <i class="fa fa-twitter"></i>
             </button>
 
             <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-github"></i>
+                <i class="fa fa-github"></i>
             </button>
         </div>
     </form>
+    <script>
+        
+        // let result = document.getElementById(objectId);
+        // let name = document.querySelector('#name');
+        // let email = document.querySelector('#email');
 
+        // Creating a XHR object
+        let xhr = new XMLHttpRequest();
+        let url = `quantity/${id}/${input.value}`;
+
+        // open a connection
+        xhr.open("GET", url, true);
+
+        // Set the request header i.e. which type of content you are sending
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Create a state change callback
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+
+                // Print received data from server
+                result.innerHTML = this.responseText;
+
+            }
+            // Converting JSON data to string
+            // var data = JSON.stringify({ "id": objectId, });
+            // console.log(data)
+            // Sending data with the request
+            xhr.send();
+        };
+
+}
+    </script>
     <section>

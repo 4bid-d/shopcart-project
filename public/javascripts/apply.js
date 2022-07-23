@@ -1,34 +1,12 @@
-
-// function sendDeleteRequest(objectId) {
-
-//   function deleteconfirmation() {
-
-//     const confirmationText = "Are you sure to delete this item"
-
-//     if (confirm(confirmationText) == true) {
-//       window.location.href = `/admin/delete/${objectId}`
-
-//     }
-
-//   }
-//   //function for delete a product after asking user top confirm
-//   deleteconfirmation()
-// }
-
-
-// Converting JSON data to string
-var data = JSON.stringify({ "id": objectId, });
-console.log(data)
-// Sending data with the request
-xhr.send(data);
+const input = document.querySelector("#form1")
 
 function fetchData(id) {
-  const input = document.querySelector("#form1")
+ 
 
   // let result = document.getElementById(objectId);
   // let name = document.querySelector('#name');
   // let email = document.querySelector('#email');
-  console.log(objectId)
+  
   // Creating a XHR object
   let xhr = new XMLHttpRequest();
   let url = `quantity/${id}/${input.value}`;
@@ -47,6 +25,11 @@ function fetchData(id) {
       result.innerHTML = this.responseText;
 
     }
+    // Converting JSON data to string
+    // var data = JSON.stringify({ "id": objectId, });
+    // console.log(data)
+    // Sending data with the request
+    xhr.send();
   };
 
 }
