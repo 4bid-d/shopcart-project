@@ -117,7 +117,6 @@ router.post("/upload", async function (req, res) {
 
   async function productUpload() {
     
-
     try {
       let productNumber = await PRODUCT.countDocuments({ admin: "true" })
 
@@ -146,11 +145,6 @@ router.post("/upload", async function (req, res) {
       const productGeneratedId = await Date.now()
       try {
 
-        /* FOR UPLOADING IMAGEFILE */
-        // fs.writeFile("../public/images/" + productGeneratedId + ".jpg", imageSendForProduct, () => {
-        //   console.log("file insertion completed")
-
-        // })
         await imageSendForProduct.mv(`./public/images/PRODUCT-images/${productGeneratedId}.jpg`, async () => {
 
         })

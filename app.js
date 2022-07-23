@@ -11,6 +11,11 @@ const { engine } = require ('express-handlebars');
 var fileUpload = require('express-fileupload')
 var session = require('express-session')
 
+//middleware for image upload
+const filesPayloadExists = require('./uploadMiddlewares/filesPayloadExists');
+const fileExtLimiter = require('./uploadMiddlewares/fileExtLimiter');
+const fileSizeLimiter = require('./uploadMiddlewares/fileSizeLimiter');
+
 var app = express();
 
 mongoose.connect('mongodb://localhost:27017/shopping',()=>console.log('connected'))
@@ -60,7 +65,7 @@ app.use(function(err, req, res, next) {
 //   console.log(err)
 // });
 // Set Port
-app.set('port', (process.env.PORT || 3000));
+app.set('port', (process.env.PORT || 5000));
 app.listen(app.get('port'), function() {
     console.log('Server started on port '+app.get('port'));
 });
