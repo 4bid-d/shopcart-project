@@ -34,7 +34,7 @@ app.use(session({secret:"key",cookie:{maxAge:6000000}}))
 
 
 app.use('^/$|(user)?', userRouter);
-app.use('/user', userRouter);
+app.use('/(/)$|(/user)/', userRouter);
 app.use('/admin', adminRouter);
 // app.use("/user/signup/signupData",userRouter)
 
@@ -65,7 +65,7 @@ app.use(function(err, req, res, next) {
 //   console.log(err)
 // });
 // Set Port
-app.set('port', (process.env.PORT || 5000));
+app.set('port', (process.env.PORT || 3000));
 app.listen(app.get('port'), function() {
     console.log('Server started on port '+app.get('port'));
 });

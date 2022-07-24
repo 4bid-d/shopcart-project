@@ -138,7 +138,7 @@ router.get('/login', (req, res) => {
 
 router.get("/logout", async (req, res) => {
   req.session.loggedIn = false
-  // req.session.destroy()
+  req.session.destroy()
   res.redirect('/user')
 
 })
