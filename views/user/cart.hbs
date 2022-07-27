@@ -40,16 +40,11 @@
             <h6 class="text-black mb-0">{{this.desc}}</h6>
           </div>
           <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-            <button class="btn btn-link px-2" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-              <i class="fa fa -minus"></i>
-            </button>
+            <button id="minus"class="btn btn-link px-2" onclick=""><i class="fa fa-minus"></i></button>
 
-            <input id="form1" min="0" name="{{this._id}}" onchange="fetchData({{this._id}})" value="{{this.quantity}}"
-              type="number" class="form-control form-control-sm" />
+            <input id="form1" min="0" name="{{this._id}}" onchange="" value="{{this.quantity}}"type="number" class="form-control form-control-sm" />
 
-            <button class="btn btn-link px-2" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-              <i class="fa fa -plus"></i>
-            </button>
+            <button id="plus" class="btn btn-link px-2" onclick="fetchData({{this._id}})">plus</button>
           </div>
           <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
             <h6 class="mb-0">{{this.Price}}</h6>
@@ -73,8 +68,20 @@
 
 <script>
       
-  `
+  //this.parentNode.querySelector('input[type=number]').stepUp()  this.parentNode.querySelector('input[type=number]').stepDown()
+const input = document.querySelector("#form1")
+const plusIcon = document.getElementById('plus')
+const minusIcon = document.getElementById('minus')
+
+  async function fetchData(id) {
  
+  let url = `quantity/${id}/${input.value}`;
+  let data = await fetch(url) 
+  console.log(url)   
+  
+
+  }
+   
     </script>
 
 
