@@ -15,6 +15,10 @@ const productSchema = new mongoose.Schema({
         type:Number,
         immutable:true
     },
+    imgId:{
+        type:String,
+        immutable:true
+    },
     productName:String,
     category:String,
     Price:Number,

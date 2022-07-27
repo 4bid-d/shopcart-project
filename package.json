@@ -22,7 +22,8 @@
     "morgan": "~1.9.1",
     "mv": "^2.1.1",
     "nodemon": "^2.0.16",
-    "simple-mongodb-helper": "^0.6.2"
+    "simple-mongodb-helper": "^0.6.2",
+    "uuid": "^8.3.2"
   },
   "main": "app.js",
   "keywords": [],

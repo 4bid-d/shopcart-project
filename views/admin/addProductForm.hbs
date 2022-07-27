@@ -12,7 +12,11 @@
   <h3></h3>
 <section>
   <div class="container ">
+<<<<<<< HEAD
     <form id="formUpload"  class="form m-5 " accept="image/*"  action="/admin/upload" enctype="multipart/form-data" method="post">
+=======
+    <form class="form m-5 " id="uploadForm" action="/admin/upload" enctype="multipart/form-data" method="post">
+>>>>>>> dev
       <div class="row">
         <div class="form-group col-lg-12 mt-5">
           <label for="validationServer01">Product name</label>
@@ -36,15 +40,14 @@
         </div>
         <div class="form-group col-lg-12 pt-3">
           <label for="validationServer03">Add image </label> <br>
-          <button class="btn btn-success"><input class="pt-3" type="file" name="image" id="validationServer03" placeholder="Add images" required><br /><br /></button>
+          <button class="btn btn-success"><input class="pt-3" type="file" name="image" id="myFiles" placeholder="Add images" required><br /><br /></button>
         </div>
       </div>
       <div class="form-group">
         <label for="validationServer03">Description</label>
         <textarea class="form-control" id="validationServer03" name="desc" rows="5" required></textarea>
       </div>
-      <button onclick="window.location.reload()" style="float:right;" type="submit"
-        class="btn btn-success">Submit</button>
+      <button onclick="sendFiles()" style="float:right;" class="btn btn-success">Submit</button>
       <a style="float:left;" href="/admin/addedproducts" class="btn btn-success ml-5"
         style=" border-color:black; float:right;"> See All Your Products</a>
     </form>
@@ -102,6 +105,37 @@
             e.preventDefault()
             sendFiles()
         })
+          </script>
+          <script>
+            const form = document.getElementById('uploadForm')
+
+        const sendFiles = async () => {
+            // Object 
+            const myFiles = document.getElementById('myFiles').files
+            console.log(myFiles)
+            const formData = new FormData()
+            formData = form.value
+            Object.keys(myFiles).forEach(key => {
+                formData.append(myFiles.item(key).name, myFiles.item(key))
+            })
+
+            const response = await fetch('http://localhost:5000/admin/upload', {
+                method: 'POST',
+                body: formData
+            })
+
+            const json = await response.json()
+
+            const h2 = document.querySelector('h2')
+            h2.textContent = `Status: ${json?.status}`
+
+            const h3 = document.querySelector('h3')
+            h3.textContent = json?.message
+
+            console.log(json)
+        }
+
+        form.addEventListener('submit', sendFiles())
           </script>
 </body>
 
