@@ -147,7 +147,7 @@ router.post("/upload", async function (req, res) {
 
     const imageSendForProduct = req.files.image
     await imageSendForProduct.mv(`public/images/${imgId}.jpg`)
-    res.json({"status":"success"})
+    res.json({"Status":"success"})
     res.render('admin/admin-added-products',{title:'added products',userDetails,admin:true})
   }
 

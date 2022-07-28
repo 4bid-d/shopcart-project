@@ -30,11 +30,17 @@
           <label for="validationServer03">Price</label>
           <input type="number" value="{{foundedDoc.Price}}" class="form-control" id="validationServer03"   required>
         </div>
+        
+      </div>
+      <div class="row">
         <div class="form-group col-lg-12 pt-3">
+        <img src="/images/{{foundedDoc.imgId}}.jpg" alt="{{foundedDoc.productName}}" style="height: ;200px;width:200px;">
+        </div>
+      <div class="form-group col-lg-12 pt-3">
           <label for="validationServer03">Add image </label> <br>
           <button class="btn btn-success"><input class="pt-3" type="file" name="image" id="validationServer03"  required><br /><br /></button>
         </div>
-      </div>
+        </div>
       <div class="form-group">
         <label for="validationServer03">Description</label>
         <input  type="text" value="{{foundedDoc.desc}}" class="form-control" id="validationServer03" name="desc" rows="5" required>

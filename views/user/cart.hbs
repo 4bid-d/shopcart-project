@@ -14,25 +14,11 @@
 
     <div class="row" id="div1">
       {{#each productArray}}
-      {{!-- <div class="col-lg-4 mt-4 flex justify-content-center text-center">
-        <div class="container-fluid">
-          <div class="card" id="cad{{this._id}}" style="width:20rem;hieght:8rem;">
-            <section class="container-fluid"><img class="card-img-top p-3" style="width:18rem;hieght:auto;"
-                src={{this.image}} alt="Card image cap"></section>
-            <div class="card-body">
-              <h5 class="card-title">{{this.productName}}</h5>
-              <h6 class="card-title">{{this.Price}}</h6>
-              <p class="card-text">{{this.desc}}</p>
-              <a href="/user/checkOut/{{this._id}}" class="btn btn-success">Checkout</a>
-              <a href="/user/removeCart/{{this._id}}" class="btn btn-danger">Remove</a>
-            </div>
-          </div>
-        </div>
-      </div> --}}
+
       <section>
         <div class="row mb-4 d-flex justify-content-between align-items-center">
           <div class="col-md-2 col-lg-2 col-xl-2">
-            <img style= "height: 150px;width:300px" src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img5.webp"
+            <img style= "height: 150px;width:300px" src="/images/{{this.imgId}}.jpg "
               class="img-fluid rounded-3" alt="Cotton T-shirt">
           </div>
           <div class="col-md-3 col-lg-3 col-xl-3">
@@ -42,9 +28,9 @@
           <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
             <button id="minus"class="btn btn-link px-2" onclick=""><i class="fa fa-minus"></i></button>
 
-            <input id="form1" min="0" name="{{this._id}}" onchange="" value="{{this.quantity}}"type="number" class="form-control form-control-sm" />
+            <p id="displayQuantity{{this._id}}" class="m2">{{this.quantity}}</p> 
 
-            <button id="plus" class="btn btn-link px-2" onclick="fetchData({{this._id}})">plus</button>
+            <button id="plus" class="btn btn-link px-2" onclick=productIncrement("{{this._id}}","displayQuantity{{this._id}}")><i class="fa fa-plus"></i></button>
           </div>
           <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
             <h6 class="mb-0">{{this.Price}}</h6>
@@ -69,15 +55,17 @@
 <script>
       
   //this.parentNode.querySelector('input[type=number]').stepUp()  this.parentNode.querySelector('input[type=number]').stepDown()
-const input = document.querySelector("#form1")
+
 const plusIcon = document.getElementById('plus')
 const minusIcon = document.getElementById('minus')
 
-  async function fetchData(id) {
- 
-  let url = `quantity/${id}/${input.value}`;
-  let data = await fetch(url) 
-  console.log(url)   
+  async function productIncrement(id,specifiedDisplay) {
+  const display = document.getElementById(specifiedDisplay)
+  const quantity  = display.textContent
+  let url = `http://localhost:3000/user/quantityDecrement/${id}/${quantity}`;
+  let data = await fetch(url,{method: 'GET'})
+  let response = await data.json()
+  display.innerHTML = response.updatedValue
   
 
   }

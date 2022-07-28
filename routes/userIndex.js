@@ -87,14 +87,22 @@ router.get('/addToCart/:proId', async(req, res) => {
     res.redirect('/user')
   }}
 })
-router.get('/quantity/:id/:updateVal',async(req,res)=>{
 
-  const productId = req.params.proId
-  const updateValue = req.params.updateVal
+router.get('/quantityDecrement/:id/:updateVal',async(req,res)=>{
+
+  const productId = req.params.id
+  let updateValue = req.params.updateVal
+  updateValue++
   const userDetail = req.session.user 
-  const updateIt = await CART.findOne({userEmail:userDetail.email,productId:productId})
-  console.log(updateIt);
-  res.send({"update":"true"})
+  await CART.updateOne({
+    userEmail:userDetail.email,
+    productId:productId
+  },
+  {
+    quantity:updateValue
+  }) 
+
+  res.json({"updatedValue":updateValue})
 
 })
 
