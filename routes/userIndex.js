@@ -62,34 +62,30 @@ router.get('/cart', async(req, res) => {
 //addtocart router
 router.get('/addToCart/:proId', async(req, res) => {
  
-  const productId = req.params.proId
-  const userDetail = req.session.user 
-
-//  calling varify login function to verify user
-
-     
+ 
+//  calling varify login function to verify user 
   if (verifyLogin(req, res)) {
-
-    let selectedProduct  = await PRODUCT.findOne({_id:productId}) 
+    const productId = req.params.proId
+    const userDetail = req.session.user 
+  
     let checkingForSameProduct = await CART.findOne({userEmail:userDetail.email,productId:productId})
 
-
     if(checkingForSameProduct){
-      res.redirect('/user/cart')
+      let cartCount = await CART.countDocuments({userEmail:userDetail.email})
+      res.json({"message":"Product is already in cart","count":cartCount}).redirect('/user')
     }else{
-    addToCart = await CART.create({
-      // cartKey:`${userDetail.email}_${productId}`,
+      addToCart = await CART.create({
       productId:productId,
-      userEmail:userDetail.email,
-      
-
+      userEmail:userDetail.email,      
     })
-    res.redirect('/user')
+    let cartCount = await CART.countDocuments({userEmail:userDetail.email})
+    res.json({"message":"successfully added to cart","count":cartCount}).redirect('/user')
   }}
 })
 
-router.get('/quantityDecrement/:id/:updateVal',async(req,res)=>{
+router.get('/quantityIecrement/:id/:updateVal',async(req,res)=>{
 
+  if (verifyLogin(req, res)) {
   const productId = req.params.id
   let updateValue = req.params.updateVal
   updateValue++
@@ -104,8 +100,39 @@ router.get('/quantityDecrement/:id/:updateVal',async(req,res)=>{
 
   res.json({"updatedValue":updateValue})
 
-})
+}})
 
+router.get('/quantityDecrement/:id/:updateVal',async(req,res)=>{
+  if (verifyLogin(req, res)) {
+  const productId = req.params.id
+  let updateValue = req.params.updateVal
+  updateValue--
+  const userDetail = req.session.user 
+  await CART.updateOne({
+    userEmail:userDetail.email,
+    productId:productId
+  },
+  {
+    quantity:updateValue
+  }) 
+
+  res.json({"updatedValue":updateValue})
+
+}})
+
+router.get('/deleteCart/:id',async(req,res)=>{
+  if (verifyLogin(req, res)) {
+  const productId = req.params.id
+  const userDetail = req.session.user 
+
+  const deleteCart = await CART.deleteOne({
+    userEmail:userDetail.email,
+    productId:productId
+  },
+  ) 
+  if(deleteCart) res.json({"status":"true"})
+  else if(!deleteCart) res.json({"status":"false"})
+}})
 
 router.get('/myorders', (req, res) => {
 

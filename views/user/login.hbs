@@ -1,7 +1,7 @@
 <section class="container mt-3 pt-5">
     <h1>Login</h1>
     <hr>
-    <form method="post" action="login">
+    <form id="logForm" method="post" action="login">
         <div>
             <p style="color: red;">{{loginError}}</p>
         </div>
@@ -21,10 +21,10 @@
         <div class="row mb-4">
             <div class="col d-flex justify-content-center">
                 <!-- Checkbox -->
-                <div class="form-check">
+                {{!-- <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
                     <label class="form-check-label" for="form2Example31"> Remember me </label>
-                </div>
+                </div> --}}
             </div>
 
             {{!-- <div class="col">
@@ -34,7 +34,7 @@
         </div>
 
         <!-- Submit button -->
-        <button type="submit" class="btn btn-success btn-block mb-4">Sign in</button>
+        <button id="signIn" class="btn btn-success btn-block mb-4">Sign in</button>
 
         <!-- Register buttons -->
         <div class="text-center">
@@ -59,35 +59,15 @@
     </form>
     <script>
         
-        // let result = document.getElementById(objectId);
-        // let name = document.querySelector('#name');
-        // let email = document.querySelector('#email');
+         let form = document.getElementById(logForm);
+        let button = document.getElementById(signIn);
+        let formData = new FormData()
+        formData = form.value
+        async function submitLogin(){
+            const login  = await fetch("login",{method:"POST"})
+            const response = await login.json()
+            console.log(response) 
+        }
 
-        // Creating a XHR object
-        let xhr = new XMLHttpRequest();
-        let url = `quantity/${id}/${input.value}`;
-
-        // open a connection
-        xhr.open("GET", url, true);
-
-        // Set the request header i.e. which type of content you are sending
-        xhr.setRequestHeader("Content-Type", "application/json");
-
-        // Create a state change callback
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-
-                // Print received data from server
-                result.innerHTML = this.responseText;
-
-            }
-            // Converting JSON data to string
-            // var data = JSON.stringify({ "id": objectId, });
-            // console.log(data)
-            // Sending data with the request
-            xhr.send();
-        };
-
-}
     </script>
     <section>
