@@ -74,13 +74,9 @@ router.get("/edit/:objId", async (req, res) => {
 
     try {
       foundedDoc = await PRODUCT.findOne({ _id: editProductId })
-<<<<<<< HEAD
+
       res.render('user/editForm', { title: 'updateProducts', admin: true, foundedDoc,userDetail })
       
-=======
-      res.render('user/editForm', { title: 'updateProducts', admin: true, foundedDoc })
-
->>>>>>> dev
     } catch (err) {
       console.error(err)
     }
@@ -152,6 +148,7 @@ router.post("/upload", async function (req, res) {
     const imageSendForProduct = req.files.image
     await imageSendForProduct.mv(`public/images/${imgId}.jpg`)
     res.json({"status":"success"})
+    res.render('admin/admin-added-products',{title:'added products',userDetails,admin:true})
   }
 
   if (verifyLogin(req, res)) {
