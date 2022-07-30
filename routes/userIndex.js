@@ -53,11 +53,13 @@ router.get('/cart', async (req, res) => {
   //  verifyLogin(req, res)
   if (verifyLogin(req, res)) {
     let productArray = []
-    let requestedUserCart = await CART.find({ userEmail: userDetail.email })
-
-    for (let i = 0; i < requestedUserCart.length; i++) {
-      let product = await PRODUCT.findOne({ _id: ObjectId(requestedUserCart[i].productId) })
-      let quantity = requestedUserCart[i].quantity
+    let requestedUserCart = await CART.findOne({ userEmail: userDetail.email })
+    //taking the array contains id and quantity of product
+    let productsIdAndQuantityArray = requestedUserCart.idAndQuantity
+    //looping to find the product from the products db with the ids of productsIdAndQuantityArray[]
+    for (let i = 0; i < productsIdAndQuantityArray.length; i++) {
+      let product = await PRODUCT.findOne({ _id: ObjectId(productsIdAndQuantityArray[i].id) })
+      let quantity = productsIdAndQuantityArray[i].quantity
       productArray.push(product)
       productArray[i].quantity = quantity
     }
@@ -78,7 +80,6 @@ router.get('/addToCart/:proId', async (req, res) => {
 
     let retrivingExistedCart = await CART.findOne({
        userEmail: userDetail.email,
-        productId: productId 
       })
     let checkingForSameProduct = await CART.findOne({
       userEmail: userDetail.email,
@@ -96,9 +97,11 @@ router.get('/addToCart/:proId', async (req, res) => {
       obj.id = productId
       obj.quantity = 1
       idArray.push(obj)
-      let updateCart = await CART.updateOne({ userEmail: userDetail.email, productId: productId }, {
+      let updateCart = await CART.updateOne({ userEmail: userDetail.email }, {
         idAndQuantity: idArray
       })
+      let cartCount = await CART.countDocuments({ userEmail: userDetail.email })
+      res.json({ "loginStatus": true, "message": "successfully added to cart", "count": cartCount }).redirect('/user')
       }
       // and after all we find there in no email the user is new to the cart 
       // then add the new user email and new product array to cart db  
@@ -129,7 +132,6 @@ router.get('/quantityIecrement/:id/:updateVal', async (req, res) => {
     const userDetail = req.session.user
     await CART.updateOne({
       userEmail: userDetail.email,
-      productId: productId,
       idAndQuantity:{$elemMatch:{id:productId}}
     },
       {
@@ -147,16 +149,8 @@ router.get('/quantityDecrement/:id/:updateVal', async (req, res) => {
     const userDetail = req.session.user
     let updateValue = req.params.updateVal
     updateValue--
-    await CART.updateOne({
-      userEmail: userDetail.email,
-      productId: productId,
-      idAndQuantity:{$elemMatch:{id:productId}}
-    },
-      {
-        quantity: updateValue
-      }
-      )
-
+    let find =await CART.findOne({userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId,quantity:updateValue++}}})
+    console.log(find);
     res.json({ "updatedValue": updateValue })
 
   }
