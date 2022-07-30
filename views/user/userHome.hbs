@@ -53,10 +53,10 @@
   <script> 
     const display = document.getElementById('display')
     const addToCart = async (id)=>{
-      const deleteProduct = await fetch(`http://localhost:3000/user/addToCart/${id}`,{method:"GET"})
-      const response = await deleteProduct.json()
+      const addProduct = await fetch(`http://localhost:3000/user/addToCart/${id}`,{method:"GET"})
+      const response = await addProduct.json()
       alert(response.message  )
-      display.innerHTML = response.message  
+     
     }
     
   </script>

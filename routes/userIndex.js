@@ -220,8 +220,10 @@ router.post('/login', async (req, res) => {
 
 
 router.post('/signup/signupData', async (req, res) => {
+ 
   let signInError = ""
   const signupDetails = req.body
+  if(signupDetails.pass &&signupDetails.email &&signupDetails.fName &&signupDetails.lName){
   const bycryptedPass = await bcrypt.hash(signupDetails.pass, 10)
   let signupStatus = false
   let serverResponseSignup = {}
@@ -254,6 +256,20 @@ router.post('/signup/signupData', async (req, res) => {
     }
 
   }
+  }else{
+    signInError = "In sufficient details entered"
+    res.json({"message":"In sufficient details entered"}).render('user/signup', { signInError })
+  }
+  
+})
+
+router.get('/productView/:id',async(req,res)=>{
+  
+    const userDetail = req.session.user
+    const productId  = req.params.id
+    const findData  = await PRODUCT.findOne({_id:productId})
+    const foundedData = findData
+    res.render('user/productView',{foundedData ,title: `${findData.productName}`, userDetail, admin: false, user: true , notSignedUser: false, inAnyForm: false})
 })
 
 module.exports = router;

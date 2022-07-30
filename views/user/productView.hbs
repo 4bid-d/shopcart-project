@@ -1,0 +1,63 @@
+<body id="body">
+
+
+
+    <section class="container mt-3 pt-5" id="home">
+        {{!-- {{!-- <div class="row col-lg-4">
+            <h1 class="mt-3">{{foundedData.productName}}</h1>
+
+            <hr> --}}
+
+           
+            <div class="container">
+		<div class="card">
+			<div class="container-fliud">
+				<div class="wrapper row">
+					<div class="preview col-md-6 p-5 ">
+						
+						<div class="preview-pic tab-content">
+						  <div class="tab-pane active" id="pic-1"><img src="/images/{{foundedData.imgId}}.jpg" /></div>
+						</div>
+						
+					</div>
+					<div class="details col-md-6 p-5" >
+						<h3 class="product-title">{{foundedData.productName}}</h3>
+                        <h3 class="vote">category: {{foundedData.category}}</h3>
+						<div class="rating">
+							{{!-- <div class="stars">
+								<span class="fa fa-star checked"></span>
+								<span class="fa fa-star checked"></span>
+								<span class="fa fa-star checked"></span>
+								<span class="fa fa-star"></span>
+								<span class="fa fa-star"></span>
+							</div> --}}
+							<span class="review-no">41 reviews</span>
+						</div>
+                        <strong><p class="">Product Description:</p></strong>
+						<p class="product-description">{{foundedData.desc}}</p>
+						<h4 class="price">current price: <span>₹ {{foundedData.Price}}</span></h4>
+						<p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
+						<div class="action">
+							<button class="add-to-cart btn btn-default" onclick=addCart("{{foundedData._id}}") type="button" >Add to cart</a></button>
+							{{!-- <button class="like btn btn-default" type="button"><span class="fa fa-heart"></span></button> --}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+    <script>
+      const addCart = async(id)=>{
+      const addProduct = await fetch(`http://localhost:3000/user/addToCart/${id}`,{method:"GET"})
+      const response = await addProduct.json()
+      alert(response.message  )
+        
+    }
+    </script>
+
+
+
+    </section>
+
+       
+    </body>
