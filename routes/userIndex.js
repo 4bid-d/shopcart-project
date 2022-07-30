@@ -181,6 +181,7 @@ router.get("/logout", async (req, res) => {
 router.post('/login', async (req, res) => {
   let loginError = {}
   const loginDetails = req.body
+  console.log(loginDetails);
   let loginStatus
   let serverResponseLogin = {}
   const findAndcheckEmail = await USERMODEL.findOne({ email: loginDetails.email })
@@ -203,11 +204,11 @@ router.post('/login', async (req, res) => {
       if (serverResponseLogin.status) {
         req.session.loggedIn = true
         req.session.user = serverResponseLogin.user
-        res.redirect('/user')
+        res.json({"login":true})
       } else {
         req.session.loggedIn = false
         // res.redirect('login')
-        res.json({"message":"invalid password"}).redirect("/user/login")
+        res.json({"message":"invalid password"})
       }
     }
   } else {
@@ -264,7 +265,7 @@ router.post('/signup/signupData', async (req, res) => {
 })
 
 router.get('/productView/:id',async(req,res)=>{
-  
+
     const userDetail = req.session.user
     const productId  = req.params.id
     const findData  = await PRODUCT.findOne({_id:productId})

@@ -1,10 +1,10 @@
 <section class="container mt-3 pt-5">
     <h1>Login</h1>
     <hr>
-    <form id="logForm"  method="post">
-    
-            <p id="error"style="color: red;"></p>
-      
+    <form id="logForm" method="post">
+
+        <p id="error" style="color: red;"></p>
+
         <!-- Email input -->
         <div class="form-outline mb-4">
             <input type="email" id="form2Example1" name="email" class="form-control" />
@@ -19,61 +19,53 @@
 
         <!-- 2 column grid layout for inline styling -->
         <div class="row mb-4">
-            <div class="col d-flex justify-content-center">
-                <!-- Checkbox -->
-                {{!-- <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
-                    <label class="form-check-label" for="form2Example31"> Remember me </label>
-                </div> --}}
-            </div>
-
-            {{!-- <div class="col">
-                <!-- Simple link -->
-                <a href="#!">Forgot password?</a>
-            </div> --}}
+            <div class="col d-flex justify-content-center"></div>
         </div>
 
         <!-- Submit button -->
-        <button id="signIn" class="btn btn-success btn-block mb-4">Sign in</button>
-
-        <!-- Register buttons -->
-        <div class="text-center">
-            <p>Not a member? <a href="signup">Register</a></p>
-            <p>or sign up with:</p>
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-facebook-f"></i>
-            </button>
-
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-google"></i>
-            </button>
-
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fa fa-twitter"></i>
-            </button>
-
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fa fa-github"></i>
-            </button>
         </div>
     </form>
-    <script>
+    <button id="signIn" class="btn btn-success btn-block mb-4">Sign in</button>
+    <!-- Register buttons -->
+    <div class="text-center">
+        <p>Not a member? <a href="signup">Register</a></p>
+        <p>or sign up with:</p>
+        <button type="button" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-facebook-f"></i>
+        </button>
 
-        let form = document.getElementById("logForm");
-        let button = document.getElementById("signIn");
-        let display = document.getElementById("error");
-       
+        <button type="button" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-google"></i>
+        </button>
 
-        async function submitLogin() {
-            const url = "`http://localhost:3000/user/login"
-            let formData = new FormData()
-            formData = form.value
-            const login = await fetch(url, { method: "POST", body: formData })
-            const response = await login.json()
-            display.innerHTML = response.message
-           
-        }
-         button.addEventListener("click",submitLogin)
+        <button type="button" class="btn btn-link btn-floating mx-1">
+            <i class="fa fa-twitter"></i>
+        </button>
 
-    </script>
-    <section>
+        <button type="button" class="btn btn-link btn-floating mx-1">
+            <i class="fa fa-github"></i>
+        </button>
+        <script>
+
+            let form = document.getElementById("logForm");
+            let button = document.querySelector("#signIn");
+            let display = document.getElementById("error");
+
+
+            async function submitLogin() {
+                const url = "login"
+                let formData = new FormData(form)
+                console.log(formData)
+                const login = await fetch(url, { method: "POST", body: formData })
+                const response = await login.json()
+                if (response.login) {
+                    window.location.href = "/user"
+                } else {
+                    display.innerHTML = response.message
+                }
+
+            }
+            button.addEventListener("click", submitLogin)
+
+        </script>
+        <section>

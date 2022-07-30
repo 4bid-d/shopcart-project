@@ -155,12 +155,16 @@ router.post("/upload", async function (req, res) {
 
     const imageSendForProduct = req.files.image
     await imageSendForProduct.mv(`public/images/${imgId}.jpg`)
-    res.json({"Status":"success"}).redirect('admin')
+    return true
     // res.render('admin/admin-added-products',{title:'added products',userDetails,admin:true})
   }
 
   if (verifyLogin(req, res)) {
-    productUpload()
+   if(productUpload()){
+    res.json({"Status":true})
+   }else{
+    res.json({"Status":false})
+   }
   }
 });
 
