@@ -5,7 +5,7 @@ const PRODUCT = require('../schemas/productModel');
 let Products
 const bcrypt = require('bcrypt');
 const USERMODEL = require('../schemas/userModel')
-const  CART= require('../schemas/cartModel');
+const CART = require('../schemas/cartModel');
 const { ObjectId } = require('mongodb');
 
 //to verify the user session valid or not to find userlogin
@@ -13,7 +13,7 @@ const verifyLogin = (req, res) => {
   const session = req.session
   if (session.loggedIn) {
     return true
-  } else {  
+  } else {
     res.redirect('/login')
   }
 }
@@ -21,15 +21,15 @@ const verifyLoginFetch = (req, res) => {
   const session = req.session
   if (session.loggedIn) {
     return true
-  } else {  
-    res.json({"redirect":"login"})
+  } else {
+    res.json({ "redirect": "login" })
   }
 }
 
 /* GET user page. */
 router.get('/', async function (req, res, next) {
 
-  
+
   const userSession = req.session
   const userDetail = userSession.user
 
@@ -44,106 +44,143 @@ router.get('/', async function (req, res, next) {
 });
 
 //cart router
-router.get('/cart', async(req, res) => {
- 
+router.get('/cart', async (req, res) => {
+
   const userDetail = req.session.user
 
-//  calling varify login function to verify user
+  //  calling varify login function to verify user
 
-    //  verifyLogin(req, res)
+  //  verifyLogin(req, res)
   if (verifyLogin(req, res)) {
-  let productArray = [] 
-  let requestedUserCart  = await CART.find({userEmail:userDetail.email})
+    let productArray = []
+    let requestedUserCart = await CART.find({ userEmail: userDetail.email })
 
-  for(let i=0;i<requestedUserCart.length;i++){
-  let product = await PRODUCT.findOne({_id:ObjectId(requestedUserCart[i].productId)})
-  let quantity = requestedUserCart[i].quantity
-  productArray.push(product)
-  productArray[i].quantity = quantity
+    for (let i = 0; i < requestedUserCart.length; i++) {
+      let product = await PRODUCT.findOne({ _id: ObjectId(requestedUserCart[i].productId) })
+      let quantity = requestedUserCart[i].quantity
+      productArray.push(product)
+      productArray[i].quantity = quantity
+    }
+
+    res.render('user/cart', { title: "Cart", productArray, userDetail, admin: false, notSignedUser: false, inAnyForm: false })
+
   }
-
-  res.render('user/cart', { title: "Cart",productArray, userDetail, admin: false,  notSignedUser: false, inAnyForm: false })
- 
-}
 })
 
 //addtocart router
-router.get('/addToCart/:proId', async(req, res) => {
-//  calling varify login function to verify user 
-  if (verifyLoginFetch(req,res)) {
+router.get('/addToCart/:proId', async (req, res) => {
+  //  calling varify login function to verify user 
+  if (verifyLoginFetch(req, res)) {
+    //product id to add ato cart
     const productId = req.params.proId
-    const userDetail = req.session.user 
-  
-    let checkingForSameProduct = await CART.findOne({userEmail:userDetail.email,productId:productId})
+    //user session
+    const userDetail = req.session.user
 
-    if(checkingForSameProduct){
-      let cartCount = await CART.countDocuments({userEmail:userDetail.email})
-      res.json({"loginStatus":true,"message":"Product is already in cart","count":cartCount}).redirect('/user')
-    }else{
-      addToCart = await CART.create({
-      productId:productId,
-      userEmail:userDetail.email,      
+    let retrivingExistedCart = await CART.findOne({
+       userEmail: userDetail.email,
+        productId: productId 
+      })
+    let checkingForSameProduct = await CART.findOne({
+      userEmail: userDetail.email,
+      idAndQuantity:{$elemMatch:{id:productId}}
     })
-    let cartCount = await CART.countDocuments({userEmail:userDetail.email})
-    res.json({"loginStatus":true,"message":"successfully added to cart","count":cartCount}).redirect('/user')
-  }}
+    //checking for same product id in the "idAndQuantity" array
+    if(checkingForSameProduct){
+      let cartCount = await CART.countDocuments({ userEmail: userDetail.email })
+      res.json({ "loginStatus": true, "message": "Product is already in cart", "count": cartCount }).redirect('/user')
+    }
+    //checking for same email address in cart db and updating the new product to it
+    else if(retrivingExistedCart) {
+      let idArray = retrivingExistedCart.idAndQuantity
+      let obj = {}
+      obj.id = productId
+      obj.quantity = 1
+      idArray.push(obj)
+      let updateCart = await CART.updateOne({ userEmail: userDetail.email, productId: productId }, {
+        idAndQuantity: idArray
+      })
+      }
+      // and after all we find there in no email the user is new to the cart 
+      // then add the new user email and new product array to cart db  
+      else {
+      let idQu = []
+      let obj = {}
+      obj.id = productId
+      obj.quantity = 1
+      idQu.push(obj)
+      console.log(idQu)
+      addToCart = await CART.create({
+        productId: productId,
+        userEmail: userDetail.email,
+        idAndQuantity: idQu
+      })
+      let cartCount = await CART.countDocuments({ userEmail: userDetail.email })
+      res.json({ "loginStatus": true, "message": "successfully added to cart", "count": cartCount }).redirect('/user')
+    }
+  }
 })
 
-router.get('/quantityIecrement/:id/:updateVal',async(req,res)=>{
+router.get('/quantityIecrement/:id/:updateVal', async (req, res) => {
 
   if (verifyLogin(req, res)) {
-  const productId = req.params.id
-  let updateValue = req.params.updateVal
-  updateValue++
-  const userDetail = req.session.user 
-  await CART.updateOne({
-    userEmail:userDetail.email,
-    productId:productId
-  },
-  {
-    quantity:updateValue
-  }) 
+    const productId = req.params.id
+    let updateValue = req.params.updateVal
+    updateValue++
+    const userDetail = req.session.user
+    await CART.updateOne({
+      userEmail: userDetail.email,
+      productId: productId,
+      idAndQuantity:{$elemMatch:{id:productId}}
+    },
+      {
+        idAndQuantity:{$elemMatch:{quantity:updateValue}}
+      })
 
-  res.json({"updatedValue":updateValue})
+    res.json({ "updatedValue": updateValue })
 
-}})
+  }
+})
 
-router.get('/quantityDecrement/:id/:updateVal',async(req,res)=>{
+router.get('/quantityDecrement/:id/:updateVal', async (req, res) => {
   if (verifyLogin(req, res)) {
-  const productId = req.params.id
-  let updateValue = req.params.updateVal
-  updateValue--
-  const userDetail = req.session.user 
-  await CART.updateOne({
-    userEmail:userDetail.email,
-    productId:productId
-  },
-  {
-    quantity:updateValue
-  }) 
+    const productId = req.params.id
+    const userDetail = req.session.user
+    let updateValue = req.params.updateVal
+    updateValue--
+    await CART.updateOne({
+      userEmail: userDetail.email,
+      productId: productId,
+      idAndQuantity:{$elemMatch:{id:productId}}
+    },
+      {
+        quantity: updateValue
+      }
+      )
 
-  res.json({"updatedValue":updateValue})
+    res.json({ "updatedValue": updateValue })
 
-}})
+  }
+})
 
-router.get('/deleteCart/:id',async(req,res)=>{
-  if (verifyLoginFetch(req,res)) {
-  const productId = req.params.id
-  const userDetail = req.session.user 
+router.get('/deleteCart/:id', async (req, res) => {
+  if (verifyLoginFetch(req, res)) {
+    const productId = req.params.id
+    const userDetail = req.session.user
 
-  const deleteCart = await CART.deleteOne({
-    userEmail:userDetail.email,
-    productId:productId
-  },
-  ) 
-  if(deleteCart) res.json({"status":"true"})
-  else if(!deleteCart) res.json({"status":"false"})
-}})
+    const deleteCart = await CART.deleteOne({
+      userEmail: userDetail.email,
+      productId: productId
+    },
+    )
+    if (deleteCart) res.json({ "status": "true" })
+    else if (!deleteCart) res.json({ "status": "false" })
+  }
+})
 
 router.get('/myorders', (req, res) => {
 
   const userDetail = req.session.user
-  
+
   if (verifyLogin(req, res)) {
     res.render('user/orders', { title: "My orders", userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
   }
@@ -154,12 +191,12 @@ router.get('/signup', (req, res) => {
 })
 
 
-router.get('/profile', async(req, res) => {
-  let userDetail= req.session.user
-if(verifyLogin(req,res)){
-  let userData = await USERMODEL.findOne({email:userDetail.email})
-  res.render('user/profile', { title: 'Profile', inAnyForm: true,userData })
-}
+router.get('/profile', async (req, res) => {
+  let userDetail = req.session.user
+  if (verifyLogin(req, res)) {
+    let userData = await USERMODEL.findOne({ email: userDetail.email })
+    res.render('user/profile', { title: 'Profile', inAnyForm: true, userData })
+  }
 })
 
 router.get('/login', (req, res) => {
@@ -198,10 +235,10 @@ router.post('/login', async (req, res) => {
         serverResponseLogin.user = findAndcheckEmail
         serverResponseLogin.status = true
       } else {
-        loginError = {"message":"invalid password"}
+        loginError = { "message": "invalid password" }
         req.session.loggedIn = false
         serverResponseLogin.status = false
-        
+
 
       }
     } catch (err) {
@@ -210,73 +247,73 @@ router.post('/login', async (req, res) => {
       if (serverResponseLogin.status) {
         req.session.loggedIn = true
         req.session.user = serverResponseLogin.user
-        res.json({"login":true})
+        res.json({ "login": true })
       } else {
         req.session.loggedIn = false
         // res.redirect('login')
-        res.json({"message":"invalid password"})
+        res.json({ "message": "invalid password" })
       }
     }
   } else {
-    loginError = {"message":"Invalid email ,or Please signup"}
+    loginError = { "message": "Invalid email ,or Please signup" }
     req.session.loggedIn = false
     serverResponseLogin.status = false
-    res.json({"message":"Invalid email ,or Please signup"}).redirect("/user/login")
+    res.json({ "message": "Invalid email ,or Please signup" }).redirect("/user/login")
   }
 })
 
 
 router.post('/signup/signupData', async (req, res) => {
- 
+
   let signInError = ""
   const signupDetails = req.body
-  if(signupDetails.pass &&signupDetails.email &&signupDetails.fName &&signupDetails.lName){
-  const bycryptedPass = await bcrypt.hash(signupDetails.pass, 10)
-  let signupStatus = false
-  let serverResponseSignup = {}
-  var emailChecking = await USERMODEL.findOne({ email: signupDetails.email })
+  if (signupDetails.pass && signupDetails.email && signupDetails.fName && signupDetails.lName) {
+    const bycryptedPass = await bcrypt.hash(signupDetails.pass, 10)
+    let signupStatus = false
+    let serverResponseSignup = {}
+    var emailChecking = await USERMODEL.findOne({ email: signupDetails.email })
 
-  if (emailChecking) {
-    signInError = "You are already a member please login"
-    signupStatus = false
-    res.render('user/signup', { signInError })
-  } else {
-    try {
-      userData = await USERMODEL.create({
-        firstName: signupDetails.fName,
-        LastName: signupDetails.lName,
-        email: signupDetails.email,
-        passWord: bycryptedPass
-      })
-      signupStatus = true
+    if (emailChecking) {
+      signInError = "You are already a member please login"
+      signupStatus = false
+      res.render('user/signup', { signInError })
+    } else {
+      try {
+        userData = await USERMODEL.create({
+          firstName: signupDetails.fName,
+          LastName: signupDetails.lName,
+          email: signupDetails.email,
+          passWord: bycryptedPass
+        })
+        signupStatus = true
 
-    } catch (err) {
-      console.log(err)
-    } finally {
-      if (signupStatus) {
-        let dbSession = await USERMODEL.findOne({ email: signupDetails.email })
-        req.session.loggedIn = true
-        req.session.user = dbSession
-        res.redirect('/user')
+      } catch (err) {
+        console.log(err)
+      } finally {
+        if (signupStatus) {
+          let dbSession = await USERMODEL.findOne({ email: signupDetails.email })
+          req.session.loggedIn = true
+          req.session.user = dbSession
+          res.redirect('/user')
 
+        }
       }
-    }
 
-  }
-  }else{
+    }
+  } else {
     signInError = "In sufficient details entered"
-    res.json({"message":"In sufficient details entered"}).render('user/signup', { signInError })
+    res.json({ "message": "In sufficient details entered" }).render('user/signup', { signInError })
   }
-  
+
 })
 
-router.get('/productView/:id',async(req,res)=>{
+router.get('/productView/:id', async (req, res) => {
 
-    const userDetail = req.session.user
-    const productId  = req.params.id
-    const findData  = await PRODUCT.findOne({_id:productId})
-    const foundedData = findData
-    res.render('user/productView',{foundedData ,title: `${findData.productName}`, userDetail, admin: false, user: true , notSignedUser: false, inAnyForm: false})
+  const userDetail = req.session.user
+  const productId = req.params.id
+  const findData = await PRODUCT.findOne({ _id: productId })
+  const foundedData = findData
+  res.render('user/productView', { foundedData, title: `${findData.productName}`, userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
 })
 
 module.exports = router;
