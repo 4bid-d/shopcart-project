@@ -179,7 +179,7 @@ router.get("/logout", async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-  let loginError = ""
+  let loginError = {}
   const loginDetails = req.body
   let loginStatus
   let serverResponseLogin = {}
@@ -191,7 +191,7 @@ router.post('/login', async (req, res) => {
         serverResponseLogin.user = findAndcheckEmail
         serverResponseLogin.status = true
       } else {
-        loginError = "invalid password"
+        loginError = {"message":"invalid password"}
         req.session.loggedIn = false
         serverResponseLogin.status = false
         
@@ -207,14 +207,14 @@ router.post('/login', async (req, res) => {
       } else {
         req.session.loggedIn = false
         // res.redirect('login')
-        res.render('user/login', { loginError })
+        res.send(loginError)
       }
     }
   } else {
-    loginError = "Invalid email ,or Please signup"
+    loginError = {"message":"Invalid email ,or Please signup"}
     req.session.loggedIn = false
     serverResponseLogin.status = false
-    res.render('user/login', { loginError })
+    res.send(loginError)
   }
 })
 

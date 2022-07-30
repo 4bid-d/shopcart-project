@@ -34,11 +34,11 @@
       </div>
       <div class="row">
         <div class="form-group col-lg-12 pt-3">
-        <img src="/images/{{foundedDoc.imgId}}.jpg" alt="{{foundedDoc.productName}}" style="height: ;200px;width:200px;">
+        <img id="imgView" src="/images/{{foundedDoc.imgId}}.jpg" alt="{{foundedDoc.productName}}" style="height: ;200px;width:200px;">
         </div>
       <div class="form-group col-lg-12 pt-3">
           <label for="validationServer03">Add image </label> <br>
-          <button class="btn btn-success"><input class="pt-3" type="file" name="image" id="validationServer03"  required><br /><br /></button>
+          <button class="btn btn-success"><input id="imgInput" class="pt-3" type="file" onchange="changeImg(event)" name="image" id="validationServer03"  required><br /><br /></button>
         </div>
         </div>
       <div class="form-group">
@@ -73,7 +73,13 @@
             }, false);
           })();
         
+        function changeImg(event){
+          const imageView = document.getElementById('imgView');
+          const imgInput = document.getElementById("imgInput");
+          console.log(event)
+         }
           </script>
+        
 </body>
 
 </html>

@@ -7,7 +7,8 @@ const CART = require('../schemas/cartModel');
 const fs = require('fs')
 const path = require('path')
 const fileUpload = require("express-fileupload");
-const { v4: uuidv4 } = require('uuid')
+const { v4: uuidv4 } = require('uuid');
+const { JSONCookie } = require('cookie-parser');
 // const mv = require()
 
 //to verify the user session valid or not to find userlogin

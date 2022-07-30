@@ -1,10 +1,10 @@
 <section class="container mt-3 pt-5">
     <h1>Login</h1>
     <hr>
-    <form id="logForm" method="post" action="login">
-        <div>
-            <p style="color: red;"></p>
-        </div>
+    <form id="logForm" method="post" >
+    
+            <p id="error"style="color: red;"></p>
+      
         <!-- Email input -->
         <div class="form-outline mb-4">
             <input type="email" id="form2Example1" name="email" class="form-control" />
@@ -58,15 +58,20 @@
         </div>
     </form>
     <script>
-        
-         let form = document.getElementById(logForm);
-        let button = document.getElementById(signIn);
-        let formData = new FormData()
-        formData = form.value
-        async function submitLogin(){
-            const login  = await fetch("login",{method:"POST"})
+
+        let form = document.getElementById("logForm");
+        let button = document.getElementById("signIn");
+        let display = document.getElementById("error");
+        button.addEventListener("click",submitLogin)
+
+        async function submitLogin() {
+            const url = "`http://localhost:3000/user/login"
+            let formData = new FormData()
+            formData = form.value
+            const login = await fetch(url, { method: "POST" })
             const response = await login.json()
-            console.log(response) 
+            display.innerHTML = response.message
+            console.log(response)
         }
 
     </script>
