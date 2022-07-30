@@ -55,7 +55,6 @@
             async function submitLogin() {
                 const url = "login"
                 let formData = new FormData(form)
-                console.log(formData)
                 const login = await fetch(url, { method: "POST", body: formData })
                 const response = await login.json()
                 if (response.login) {

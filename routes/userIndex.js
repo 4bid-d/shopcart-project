@@ -13,8 +13,16 @@ const verifyLogin = (req, res) => {
   const session = req.session
   if (session.loggedIn) {
     return true
-  } else {
+  } else {  
     res.redirect('/login')
+  }
+}
+const verifyLoginFetch = (req, res) => {
+  const session = req.session
+  if (session.loggedIn) {
+    return true
+  } else {  
+    res.json({"redirect":"login"})
   }
 }
 
@@ -61,10 +69,8 @@ router.get('/cart', async(req, res) => {
 
 //addtocart router
 router.get('/addToCart/:proId', async(req, res) => {
- 
- 
 //  calling varify login function to verify user 
-  if (verifyLogin(req, res)) {
+  if (verifyLoginFetch(req,res)) {
     const productId = req.params.proId
     const userDetail = req.session.user 
   
@@ -72,14 +78,14 @@ router.get('/addToCart/:proId', async(req, res) => {
 
     if(checkingForSameProduct){
       let cartCount = await CART.countDocuments({userEmail:userDetail.email})
-      res.json({"message":"Product is already in cart","count":cartCount}).redirect('/user')
+      res.json({"loginStatus":true,"message":"Product is already in cart","count":cartCount}).redirect('/user')
     }else{
       addToCart = await CART.create({
       productId:productId,
       userEmail:userDetail.email,      
     })
     let cartCount = await CART.countDocuments({userEmail:userDetail.email})
-    res.json({"message":"successfully added to cart","count":cartCount}).redirect('/user')
+    res.json({"loginStatus":true,"message":"successfully added to cart","count":cartCount}).redirect('/user')
   }}
 })
 
@@ -121,7 +127,7 @@ router.get('/quantityDecrement/:id/:updateVal',async(req,res)=>{
 }})
 
 router.get('/deleteCart/:id',async(req,res)=>{
-  if (verifyLogin(req, res)) {
+  if (verifyLoginFetch(req,res)) {
   const productId = req.params.id
   const userDetail = req.session.user 
 
