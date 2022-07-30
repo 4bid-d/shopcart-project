@@ -207,14 +207,14 @@ router.post('/login', async (req, res) => {
       } else {
         req.session.loggedIn = false
         // res.redirect('login')
-        res.send(loginError)
+        res.json({"message":"invalid password"}).redirect("/user/login")
       }
     }
   } else {
     loginError = {"message":"Invalid email ,or Please signup"}
     req.session.loggedIn = false
     serverResponseLogin.status = false
-    res.send(loginError)
+    res.json({"message":"Invalid email ,or Please signup"}).redirect("/user/login")
   }
 })
 

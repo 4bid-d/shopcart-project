@@ -70,7 +70,10 @@ router.get("/delete/:odjId", async (req, res) => {
 router.get("/edit/:objId", async (req, res) => {
   let userDetail = req.session.user
   const editProductId = req.params.objId
-  renderRequestDoc()
+  if(verifyLogin(req,res)){
+
+    renderRequestDoc()
+  }
   async function renderRequestDoc() {
 
     try {
@@ -89,24 +92,28 @@ router.post("/edited/:objId", async (req, res) => {
 
   const userEditedProductId = req.params.objId
   const userEditedProduct = req.body
+  const imageId = uuidv4()
 
   updateRequestDoc()
   async function updateRequestDoc() {
 
     try {
 
-      foundedDoc = await PRODUCT.findOne({ _id: userEditedProductId })
+      // foundedDoc = await PRODUCT.findOne({ _id: userEditedProductId })
 
-      updateDoc = await PRODUCT.updateOne({ _id: userEditedProductId }, {
+     const updateDoc = await PRODUCT.updateOne({ _id: userEditedProductId }, {
         productName: userEditedProduct.productName,
+        imgId:imageId,
         category: userEditedProduct.category,
         Price: userEditedProduct.Price,
         desc: userEditedProduct.desc,
         updatedDate: Date.now()
       })
-      /*WRITE FUNCTION FOR UPDATING IMAGEFILE */
-      res.redirect('/admin/addedproducts')
-
+      console.log(updateDoc)
+      const imageFile = req.files.image
+      imageFile.mv(`public/images/${imageId}.jpg`)
+      res.json({"status":"true"})
+      res.redirect('admin/admin-added-products')
 
     } catch (err) {
       console.error(err)
@@ -148,8 +155,8 @@ router.post("/upload", async function (req, res) {
 
     const imageSendForProduct = req.files.image
     await imageSendForProduct.mv(`public/images/${imgId}.jpg`)
-    res.json({"Status":"success"})
-    res.render('admin/admin-added-products',{title:'added products',userDetails,admin:true})
+    res.json({"Status":"success"}).redirect('admin')
+    // res.render('admin/admin-added-products',{title:'added products',userDetails,admin:true})
   }
 
   if (verifyLogin(req, res)) {

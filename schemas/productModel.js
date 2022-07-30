@@ -17,7 +17,7 @@ const productSchema = new mongoose.Schema({
     },
     imgId:{
         type:String,
-        immutable:true
+       
     },
     productName:String,
     category:String,
