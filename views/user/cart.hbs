@@ -19,7 +19,7 @@
       {{#each productArray}}
 
       <section>
-        <div class="row mb-4 d-flex justify-content-between align-items-center">
+        <div id="{{this._id}}" class="row mb-4 d-flex justify-content-between align-items-center">
           <div class="col-md-2 col-lg-2 col-xl-2">
             <img style="height: 150px;width:300px" src="/images/{{this.imgId}}.jpg " class="img-fluid rounded-3"
               alt="Cotton T-shirt">
@@ -100,7 +100,8 @@
         let response = await data.json()
         if (response) {
           alert("deletion success Full")
-          window.location.reload()
+          document.getElementById(id).remove()
+          //window.location.reload()
         }else if(response.redirect){
           window.location.href = response.redirect
         }else {

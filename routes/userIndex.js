@@ -79,19 +79,19 @@ router.get('/addToCart/:proId', async (req, res) => {
     const userDetail = req.session.user
 
     let retrivingExistedCart = await CART.findOne({
-       userEmail: userDetail.email,
-      })
+      userEmail: userDetail.email,
+    })
     let checkingForSameProduct = await CART.findOne({
       userEmail: userDetail.email,
-      idAndQuantity:{$elemMatch:{id:productId}}
+      idAndQuantity: { $elemMatch: { id: productId } }
     })
     //checking for same product id in the "idAndQuantity" array
-    if(checkingForSameProduct){
+    if (checkingForSameProduct) {
       let cartCount = await CART.countDocuments({ userEmail: userDetail.email })
       res.json({ "loginStatus": true, "message": "Product is already in cart", "count": cartCount }).redirect('/user')
     }
     //checking for same email address in cart db and updating the new product to it
-    else if(retrivingExistedCart) {
+    else if (retrivingExistedCart) {
       let idArray = retrivingExistedCart.idAndQuantity
       let obj = {}
       obj.id = productId
@@ -102,10 +102,10 @@ router.get('/addToCart/:proId', async (req, res) => {
       })
       let cartCount = await CART.countDocuments({ userEmail: userDetail.email })
       res.json({ "loginStatus": true, "message": "successfully added to cart", "count": cartCount }).redirect('/user')
-      }
-      // and after all we find there in no email the user is new to the cart 
-      // then add the new user email and new product array to cart db  
-      else {
+    }
+    // and after all we find there in no email the user is new to the cart 
+    // then add the new user email and new product array to cart db  
+    else {
       let idQu = []
       let obj = {}
       obj.id = productId
@@ -131,27 +131,27 @@ router.get('/quantityIecrement/:id/:updateVal', async (req, res) => {
     let updateValue = req.params.updateVal
     let updatedArray = []
     updateValue++
-    let find =await CART.findOne({userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}})
-      find.idAndQuantity.forEach(function(obj){
-      if(obj.id == productId) {
+    let find = await CART.findOne({ userEmail: userDetail.email,
+       idAndQuantity: { $elemMatch: { id: productId } } 
+      })
+    find.idAndQuantity.forEach(function (obj) {
+      if (obj.id == productId) {
         obj.quantity = updateValue
         updatedArray.push(obj)
-      }else{
+      } else {
         updatedArray.push(obj)
-      } 
-    }    
-  )
+      }
+    }
+    )
     console.log(updatedArray);
     let updateDb = await CART.updateOne({
-        userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}
-      },{
-        idAndQuantity:updatedArray
-      })
-     if(updateDb){
-       res.json({ "updatedValue": updateValue })
-     }else{
-      res.json({ "updatedValue": updateValue-- })       
-     }
+      userEmail: userDetail.email, 
+      idAndQuantity: { $elemMatch: { id: productId } }
+    },{
+      idAndQuantity: updatedArray
+    })
+    if (updateDb) res.json({ "updatedValue": updateValue })
+    else res.json({ "updatedValue": updateValue-- })
 
   }
 })
@@ -163,27 +163,23 @@ router.get('/quantityDecrement/:id/:updateVal', async (req, res) => {
     let updateValue = req.params.updateVal
     let updatedArray = []
     updateValue--
-    let find =await CART.findOne({userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}})
-      find.idAndQuantity.forEach(function(obj){
-      if(obj.id == productId) {
+    let find = await CART.findOne({ userEmail: userDetail.email,
+    idAndQuantity: { $elemMatch: { id: productId } } })
+    find.idAndQuantity.forEach(function (obj) {
+      if (obj.id == productId) {
         obj.quantity = updateValue
         updatedArray.push(obj)
-      }else{
-        updatedArray.push(obj)
-      } 
-    }    
-  )
+      } else updatedArray.push(obj)
+    })
     console.log(updatedArray);
     let updateDb = await CART.updateOne({
-        userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}
-      },{
-        idAndQuantity:updatedArray
-      })
-     if(updateDb){
-       res.json({ "updatedValue": updateValue })
-     }else{
-      res.json({ "updatedValue": updateValue-- })       
-     }
+      userEmail: userDetail.email, 
+      idAndQuantity: { $elemMatch: { id: productId } }
+    }, {
+      idAndQuantity: updatedArray
+    })
+    if (updateDb) res.json({ "updatedValue": updateValue })
+    else res.json({ "updatedValue": updateValue-- })  
 
   }
 })
@@ -192,21 +188,26 @@ router.get('/deleteCart/:id', async (req, res) => {
   if (verifyLoginFetch(req, res)) {
     const productId = req.params.id
     const userDetail = req.session.user
-
-    const deleteCart = await CART.deleteOne({
-      userEmail: userDetail.email,
-      productId: productId
-    },
-    )
-    if (deleteCart) res.json({ "status": "true" })
-    else if (!deleteCart) res.json({ "status": "false" })
+    let updatedArray = []
+    let deleteCart = await CART.findOne({userEmail: userDetail.email, idAndQuantity: { $elemMatch: { id: productId } } })
+    deleteCart.idAndQuantity.forEach(function (obj) {
+      if (obj.id !== productId) {
+        updatedArray.push(obj)
+      }
+    }) 
+    console.log(updatedArray);
+    let updateDb = await CART.updateOne({
+      userEmail: userDetail.email, idAndQuantity: { $elemMatch: { id: productId } }
+    }, {
+      idAndQuantity: updatedArray
+    })
+    if (!updateDb) res.json({ "status": "true" })
+    else res.json({ "status": "false" })
   }
 })
 
 router.get('/myorders', (req, res) => {
-
   const userDetail = req.session.user
-
   if (verifyLogin(req, res)) {
     res.render('user/orders', { title: "My orders", userDetail, admin: false, user: true, notSignedUser: false, inAnyForm: false })
   }
