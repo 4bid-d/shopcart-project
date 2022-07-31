@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
 
-    productId: {
-        type: String,
-        immutable: true,
-    },
+   // productId: {
+    //     type: String,
+    //     immutable: true,
+    // },
 
     userEmail: {
         type: String,

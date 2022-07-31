@@ -127,18 +127,31 @@ router.get('/quantityIecrement/:id/:updateVal', async (req, res) => {
 
   if (verifyLogin(req, res)) {
     const productId = req.params.id
-    let updateValue = req.params.updateVal
-    updateValue++
     const userDetail = req.session.user
-    await CART.updateOne({
-      userEmail: userDetail.email,
-      idAndQuantity:{$elemMatch:{id:productId}}
-    },
-      {
-        idAndQuantity:{$elemMatch:{quantity:updateValue}}
+    let updateValue = req.params.updateVal
+    let updatedArray = []
+    updateValue++
+    let find =await CART.findOne({userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}})
+      find.idAndQuantity.forEach(function(obj){
+      if(obj.id == productId) {
+        obj.quantity = updateValue
+        updatedArray.push(obj)
+      }else{
+        updatedArray.push(obj)
+      } 
+    }    
+  )
+    console.log(updatedArray);
+    let updateDb = await CART.updateOne({
+        userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}
+      },{
+        idAndQuantity:updatedArray
       })
-
-    res.json({ "updatedValue": updateValue })
+     if(updateDb){
+       res.json({ "updatedValue": updateValue })
+     }else{
+      res.json({ "updatedValue": updateValue-- })       
+     }
 
   }
 })
@@ -148,10 +161,29 @@ router.get('/quantityDecrement/:id/:updateVal', async (req, res) => {
     const productId = req.params.id
     const userDetail = req.session.user
     let updateValue = req.params.updateVal
+    let updatedArray = []
     updateValue--
-    let find =await CART.findOne({userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId,quantity:updateValue++}}})
-    console.log(find);
-    res.json({ "updatedValue": updateValue })
+    let find =await CART.findOne({userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}})
+      find.idAndQuantity.forEach(function(obj){
+      if(obj.id == productId) {
+        obj.quantity = updateValue
+        updatedArray.push(obj)
+      }else{
+        updatedArray.push(obj)
+      } 
+    }    
+  )
+    console.log(updatedArray);
+    let updateDb = await CART.updateOne({
+        userEmail: userDetail.email,idAndQuantity:{$elemMatch:{id:productId}}
+      },{
+        idAndQuantity:updatedArray
+      })
+     if(updateDb){
+       res.json({ "updatedValue": updateValue })
+     }else{
+      res.json({ "updatedValue": updateValue-- })       
+     }
 
   }
 })
