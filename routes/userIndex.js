@@ -668,12 +668,13 @@ router.get("/address", async (req, res) => {
           productArray.push(findAndPushProduct)
       }
     
-    console.log(productArray)
     if (findAddress.address[0]
     && findCart
     ) {
       let address = findAddress.address
-      res.render('user/checkOut', { title: "Checkout", address })
+      let cart = findCart
+      let quantityArray = findCart.idAndQuantity
+      res.render('user/checkOut', { title: "Checkout", address ,cart , productArray,quantityArray})
     } else {
       res.render('user/checkOut', { title: "Checkout" })
     }
@@ -712,6 +713,13 @@ router.post("/address", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+})
+router.get("/getCart",async(req,res)=>{
+  let userData= req.session.user 
+  let cart = await CART.findOne({
+    userEmail:userData.email
+  })
+  res.json({"cart":cart})
 })
 
 module.exports = router;
