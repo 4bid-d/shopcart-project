@@ -4,13 +4,12 @@
 </head>
 
 
-<body id="body">
 
 
 
   <section class="container mt-3 pt-5" id="home">
     <div class="raw">
-      <h1 class="mt-3">Cart</h1>
+      <h1 class="mt-3"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart </h1>
       <p id="deleteDisplay"></p>
     </div>
     <hr>
@@ -48,15 +47,15 @@
         </div>
       {{/each}}
       <hr>
-          <h3 style="float:right;">total:{{Total}}</h3>
+          <h3 style="float:left;">total:</h3> <h3 id="total" style="float:right;">{{Total}}</h3>
       </section>
 
     </div>
 
 
 
-    <a href="/user" class="btn btn-success" style="float:right ;">Back</a>
-
+    <a href="/user" class="btn btn-success" style="float:left ; margin:5rem;"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back </a>
+   <a href="/user/address" class="btn btn-success" style="float:right ; margin:5rem;"><i class="fa fa-shopping-bag" aria-hidden="true"></i> Checkout</a>
 
   </section>
 
@@ -68,13 +67,14 @@
     const plusIcon = document.getElementById('plus')
     const minusIcon = document.getElementById('minus')
     const allDisplay = document.querySelectorAll('.m2')
-
+    const total = document.getElementById("total")
     async function productIncrement(id, specifiedDisplay) {
       const display = document.getElementById(specifiedDisplay)
       const quantity = display.textContent
       let url = `http://localhost:3000/user/quantityIecrement/${id}/${quantity}`;
       let data = await fetch(url, { method: 'GET' })
       let response = await data.json()
+      total.innerHTML = response.total
       display.innerHTML = response.updatedValue
 
     }
@@ -86,7 +86,9 @@
           let url = `http://localhost:3000/user/quantityDecrement/${id}/${quantity}`;
           let data = await fetch(url, { method: 'GET' })
           let response = await data.json()
+          total.innerHTML = response.total
           display.innerHTML = response.updatedValue
+
 
       }else{
          
@@ -100,14 +102,16 @@
         let url = `http://localhost:3000/user/deleteCart/${id}`;
         let data = await fetch(url, { method: 'GET' })
         let response = await data.json()
-        if (response) {
-          alert("deletion success Full")
+        if (response.status) {
           document.getElementById(id).remove()
+          displayStatus.style.color = "green"
+          displayStatus.innerHTML = "Deletion successful."
+          total.innerHTML = response.total
         }else if(response.redirect){
           window.location.href = response.redirect
-        }else {
+        }else if(!response.status){
           displayStatus.style.color = "red"
-          displayStatus.innerHTML = "deletion failed"
+          displayStatus.innerHTML = "Deletion failed."
         }
       }
 

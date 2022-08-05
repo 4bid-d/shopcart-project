@@ -57,7 +57,11 @@
       const addProduct = await fetch(`/user/addToCart/${id}`,{method:"GET"})
       const response = await addProduct.json()
       if(response.message){
-        alert(response.message)
+        display.innerHTML = response.message
+        setTimeout(()=>{
+          display.innerHTML = null
+        },1000)
+        
       }else{       
         window.location.href  = response.redirect
       }

@@ -27,14 +27,24 @@ router.get('/addedproducts', async function (req, res) {
   if (verifyLogin(req, res)) {
 
     try {
-      let productsFromDatabase = await PRODUCT.find({ userKey: `${userDetail.email}_${userDetail._id}` })
+      let productsFromDatabase = await PRODUCT.find(
+        {
+          userKey: `${userDetail.email}_${userDetail._id}`
+        }
+      )
       products = productsFromDatabase
 
     } catch (err) {
       console.error(err)
     }
 
-    res.render('admin/admin-added-products', { title: 'Add products', userDetail, products, admin: true });
+    res.render('admin/admin-added-products',
+      {
+        title: 'Add products',
+        userDetail,
+        products,
+        admin: true
+      });
   }
 })
 
@@ -46,7 +56,11 @@ router.get("/delete/:odjId", async (req, res) => {
   async function deleteRequestDoc() {
 
     try {
-      await PRODUCT.deleteOne({ _id: deleteProductId })
+      await PRODUCT.deleteOne(
+        {
+          _id: deleteProductId
+        }
+      )
       res.redirect('/admin/addedproducts')
 
     } catch (err) {
@@ -57,7 +71,11 @@ router.get("/delete/:odjId", async (req, res) => {
   async function deleteRequestDocFromCart() {
 
     try {
-      await CART.deleteMany({ productId: deleteProductId })
+      await CART.deleteMany(
+        {
+          productId: deleteProductId
+        }
+      )
       res.redirect('/admin/addedproducts')
 
     } catch (err) {
@@ -70,17 +88,29 @@ router.get("/delete/:odjId", async (req, res) => {
 router.get("/edit/:objId", async (req, res) => {
   let userDetail = req.session.user
   const editProductId = req.params.objId
-  if(verifyLogin(req,res)){
+  if (verifyLogin(req, res)) {
 
     renderRequestDoc()
   }
   async function renderRequestDoc() {
 
     try {
-      foundedDoc = await PRODUCT.findOne({ _id: editProductId })
+      foundedDoc = await PRODUCT.findOne(
+        {
+          _id: editProductId
+        }
+      )
 
-      res.render('user/editForm', { title: 'updateProducts', admin: true, foundedDoc,userDetail })
-      
+      res.render('user/editForm',
+        {
+          title: 'updateProducts',
+          admin: true,
+          foundedDoc,
+          userDetail
+        }
+      )
+
+
     } catch (err) {
       console.error(err)
     }
@@ -101,18 +131,26 @@ router.post("/edited/:objId", async (req, res) => {
 
       // foundedDoc = await PRODUCT.findOne({ _id: userEditedProductId })
 
-     const updateDoc = await PRODUCT.updateOne({ _id: userEditedProductId }, {
-        productName: userEditedProduct.productName,
-        imgId:imageId,
-        category: userEditedProduct.category,
-        Price: userEditedProduct.Price,
-        desc: userEditedProduct.desc,
-        updatedDate: Date.now()
-      })
-      console.log(updateDoc)
+      const updateDoc = await PRODUCT.updateOne(
+        {
+          _id: userEditedProductId
+        },
+        {
+          productName: userEditedProduct.productName,
+          imgId: imageId,
+          category: userEditedProduct.category,
+          Price: userEditedProduct.Price,
+          desc: userEditedProduct.desc,
+          updatedDate: Date.now()
+        }
+      )
       const imageFile = req.files.image
       imageFile.mv(`public/images/${imageId}.jpg`)
-      res.json({"status":"true"})
+      res.json(
+        {
+          "status": "true"
+        }
+      )
       res.redirect('admin/admin-added-products')
 
     } catch (err) {
@@ -128,29 +166,37 @@ router.post("/upload", async function (req, res) {
   async function productUpload() {
     let imgId = uuidv4()
 
-    let productNumber = await PRODUCT.countDocuments({ admin: "true" })
+    let productNumber = await PRODUCT.countDocuments(
+      {
+        admin: "true"
+      }
+    )
 
     if (productNumber === 0) {
-      Product = await PRODUCT.create({
-        userKey: `${userDetails.email}_${userDetails._id}`,
-        number: 0,
-        imgId: imgId,
-        productName: productsDetails.productName,
-        category: productsDetails.category,
-        Price: productsDetails.Price,
-        desc: productsDetails.desc,
-      });
+      Product = await PRODUCT.create(
+        {
+          userKey: `${userDetails.email}_${userDetails._id}`,
+          number: 0,
+          imgId: imgId,
+          productName: productsDetails.productName,
+          category: productsDetails.category,
+          Price: productsDetails.Price,
+          desc: productsDetails.desc,
+        }
+      );
     }
     else {
-      Product = await PRODUCT.create({
-        userKey: `${userDetails.email}_${userDetails._id}`,
-        number: productNumber,
-        imgId: imgId,
-        productName: productsDetails.productName,
-        category: productsDetails.category,
-        Price: productsDetails.Price,
-        desc: productsDetails.desc,
-      });
+      Product = await PRODUCT.create(
+        {
+          userKey: `${userDetails.email}_${userDetails._id}`,
+          number: productNumber,
+          imgId: imgId,
+          productName: productsDetails.productName,
+          category: productsDetails.category,
+          Price: productsDetails.Price,
+          desc: productsDetails.desc,
+        }
+      );
     }
 
     const imageSendForProduct = req.files.image
@@ -160,11 +206,19 @@ router.post("/upload", async function (req, res) {
   }
 
   if (verifyLogin(req, res)) {
-   if(productUpload()){
-    res.json({"Status":true})
-   }else{
-    res.json({"Status":false})
-   }
+    if (productUpload()) {
+      res.json(
+        {
+          "Status": true
+        }
+      )
+    } else {
+      res.json(
+        {
+          "Status": false
+        }
+      )
+    }
   }
 });
 
@@ -174,7 +228,13 @@ router.get('/', function (req, res) {
   let userDetail = req.session.user
 
   if (verifyLogin(req, res)) {
-    res.render('admin/addProductForm', { title: 'Products Form', userDetail, admin: true });
+    res.render('admin/addProductForm',
+      {
+        title: 'Products Form',
+        userDetail,
+        admin: true
+      }
+    );
   }
 })
 

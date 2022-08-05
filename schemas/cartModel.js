@@ -7,10 +7,6 @@ const cartSchema = new mongoose.Schema({
         immutable: true,
     },
 
-    quantity: {
-        type: Number,
-        default: 1
-    },
     idAndQuantity: {
         type:Array,
         default:[],
@@ -21,6 +17,6 @@ const cartSchema = new mongoose.Schema({
 
 
 })
-
+    
 
 module.exports = mongoose.model('userCart', cartSchema)
