@@ -724,39 +724,60 @@ router.get("/getCart", async (req, res) => {
 })
 
 router.post("/Checkout", async (req, res) => {
-  let userData = req.session.user
-  let selectedAddressPinPhone = []
-  let productArray = [] 
-  let adminEmail = []
-  let Methods = req.body
-  let preferedAddress = Methods.address.split(",")
-  for (let i = 0; i < preferedAddress.length; i++) {
-    let arr = preferedAddress[i].split(':')
-    selectedAddressPinPhone.push(arr[1])
-  }
-  let userCart = await CART.findOne(
-    {
-      userEmail: userData.email
+  if(verifyLoginFetch(req,res)){
+    let userData = req.session.user
+    let selectedAddressPinPhone = []
+    let productArray = [] 
+    let adminEmail = []
+    let Methods = req.body
+    let preferedAddress = Methods.address.split(",")
+    for (let i = 0; i < preferedAddress.length; i++) {
+      let arr = preferedAddress[i].split(':')
+      selectedAddressPinPhone.push(`${arr[0]}:${arr[1]}`)
     }
-  )
-  for (let i = 0; i < userCart.idAndQuantity.length; i++) {
-    let product = await PRODUCT.findOne(
+    let userCart = await CART.findOne(
       {
-        _id:ObjectId(userCart.idAndQuantity[i].id)
+        userEmail: userData.email
       }
     )
-    productArray.push(product)
-}
-  productArray.forEach((obj)=>{
-    let arr  = obj.userKey.split('_')
-    adminEmail.push(arr[0])
-  })
-  console.log(adminEmail);
-  // let createOrder = await ORDER.create(
-  //   {
-
-  //   }
-  // )
+    for (let i = 0; i < userCart.idAndQuantity.length; i++) {
+      let product = await PRODUCT.findOne(
+        {
+          _id:ObjectId(userCart.idAndQuantity[i].id)
+        }
+      )
+      productArray.push(
+        {
+          productId:product._id,
+          image:product.imgId,
+          price:product.Price,
+          userKey:product.userKey
+        }
+      )
+  }
+    productArray.forEach((obj)=>{
+      let arr  = obj.userKey.split('_')
+      adminEmail.push(arr[0])
+    })
+  
+    let createOrder = await ORDER.create(
+      {
+        customerEmail:userData.email,
+        delivery:selectedAddressPinPhone,
+        userDetails:userData.firstName,
+        paymentMethod:Methods.payment,
+        total:userCart.total,
+        productDetail:productArray,
+        displayOrderTo:adminEmail
+      }
+    )
+    if (createOrder) {
+      res.json({"status":true})
+    }else{
+      res.json({"status":false})
+    }
+  
+  }
 })
 
 module.exports = router;

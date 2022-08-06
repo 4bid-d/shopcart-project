@@ -133,6 +133,11 @@
             form.append("payment",formValues.F2)
             const sendForm = await fetch('/user/Checkout',{method:"POST",body:form})
             const response = await sendForm.json()
+            if(response.status){
+                alert("Hurray order placed successfully")
+            }else if(response.redirect){
+                window.location.href = response.redirect
+            }
             }else if(!formValues.F2){
                 alert("please select a payment method")
             }else if(!formValues.F1){

@@ -2,9 +2,6 @@ const mongoose = require('mongoose')
 
 const orderModel = new mongoose.Schema({
 
-    adminKey:{
-        type:String
-    },
     customerEmail:{
         type:String,
     },
@@ -13,12 +10,20 @@ const orderModel = new mongoose.Schema({
         default:[]
     },
     userDetails:{
-        type:Array,
-        default:[]
+        type:String   
     },
     paymentMethod:{
         type:String
     },
+    total:String,
+    productDetail:{
+        type:Array,
+        default:[]
+    },
+    displayOrderTo:{
+        type:Array,
+        default:[]
+    }
 
 
 })
