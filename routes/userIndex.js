@@ -6,6 +6,7 @@ let Products
 const bcrypt = require('bcrypt');
 const USERMODEL = require('../schemas/userModel')
 const CART = require('../schemas/cartModel');
+const ORDER = require('../schemas/order');
 const { ObjectId } = require('mongodb');
 
 //to verify the user session valid or not to find userlogin
@@ -715,6 +716,14 @@ router.post("/address", async (req, res) => {
   }
 })
 router.get("/getCart",async(req,res)=>{
+  let userData= req.session.user 
+  let cart = await CART.findOne({
+    userEmail:userData.email
+  })
+  res.json({"cart":cart})
+})
+
+router.post("/Checkout",async(req,res)=>{
   let userData= req.session.user 
   let cart = await CART.findOne({
     userEmail:userData.email

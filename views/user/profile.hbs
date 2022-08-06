@@ -6,10 +6,11 @@
                     <div class="row g-0">
                         <div class="col-md-4 gradient-custom text-center text-white"
                             style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            {{!-- <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" --}}
+                            {{!-- <img
+                                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" --}}
                                 {{!-- alt="Avatar" class="img-fluid my-5" style="width: 80px;" /> --}}
                             <form action="/updateProfile" method="post">
-                                
+
                                 <i class="far fa-edit mb-5"></i>
                         </div>
                         <div class="col-md-8">
@@ -17,40 +18,46 @@
                                 <div class="row pt-1">
                                     <div class="col-6 mb-3">
                                         <h6>User</h6>
-                                          <h6><p class="text-muted">{{userData.firstName}}{{userData.LastName}}</p></h6>
-                                    <hr>
+                                        <h6>
+                                            <p class="text-muted">{{userData.firstName}}{{userData.LastName}}</p>
+                                        </h6>
+                                        <hr>
                                     </div>
                                 </div>
-                              
+
                                 <h6>Address</h6>
-                                
-                                <input type="text" value="{{userData.address}}" name="address" id="">
-                                
+                                {{#each userData.address}}
+                                <p class="text-muted">{{this.address}}</p>
+                                <p class="text-muted"> Pin : {{this.pin}}</p>
+                                {{/each}}
                                 <hr>
-                               
+
                                 <div class="row pt-1">
                                     <div class="col-6 mb-3">
                                         <h6>Email</h6>
                                         <p class="text-muted">{{userData.email}}</p>
-                                    <hr>
+                                        <hr>
                                     </div>
-                                </div> 
-                                        
-                                  <div class="row pt-1">
+                                </div>
+
+                                <div class="row pt-1">
                                     <div class="col-6 mb-3">
                                         <h6>Phone</h6>
-                                        <input value="{{userDate.phone}}"type="number" name="phone"required>
-                                    <hr>
+                                        {{#each userData.address}}
+
+                                        <p class="text-muted">{{this.phone}}</p>
+                                        {{/each}}
+                                        <hr>
                                     </div>
-                                </div>                                 
                                 </div>
-                                <div><button type="submit" class="btn btn success">Update</button></div>
-                                </form>
                             </div>
+                            <div><button type="submit" class="btn btn success">Update</button></div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </section>
