@@ -4,18 +4,18 @@
             <section class="col-lg-6 mt-3 pt-3  ">
                 <div class="col-sm-12 col-md-12 col-lg-12">
                     <form id="formAddress" action="">
-                        {{#each address}}
+                        {{#each foundAddress.address}}
                         <div class="card rounded-3 mb-2">
                             <div class="card-body p-4">
                                 <div class="row flex justify-content-between align-items-center">
 
                                     <div class="form-check m-2">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                            id="flexRadioDefault2">
+                                        <input class="form-check-input" value="Address :{{this.address}}, Pin : {{this.pin}},Phone : {{this.phone}}" type="radio"
+                                            name="flexRadioDefault" id="flexRadioDefault2" >
                                         <label class="form-check-label" for="flexRadioDefault2">
-                                            Address : {{address}} <br>
-                                            Phone : {{phone}} <br>
-                                            Pin : {{pin}} <br>
+                                            Address : {{this.address}} <br>
+                                            Phone : {{this.phone}} <br>
+                                            Pin : {{this.pin}} <br>
                                         </label>
                                     </div>
                                 </div>
@@ -39,13 +39,11 @@
                                         <div class="col-sm-12 col-lg-6 col-md-6">
                                             <img src="/images/{{this.imgId}}.jpg" alt="">
                                         </div>
-
                                         <div class="col-sm-12 col-lg-6 col-md-12">
-                                                <div id="quantityDisplay{{this._id}}" class="row pl-3">
-                                                    <h5 class="mb-1"> <strong>Name : </strong>{{this.productName}}</h5>
-                                                    <h5 class="mb-1"><strong>Rs : </strong>{{this.Price}} </h5>
-                                                    
-                                                </div>
+                                            <div id="quantityDisplay{{this._id}}" class="row pl-3">
+                                                <h5 class="mb-1"> <strong>Name : </strong>{{this.productName}}</h5>
+                                                <h5 class="mb-1"><strong>Rs : </strong>{{this.Price}} </h5>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -60,27 +58,29 @@
                     <div class="card rounded-3 mb-2">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-center">
-
                                 <div class="col-lg-6 col-sm-12">
                                     <div class="card rounded-3 justify-content-between align-items-center mb-2 ">
                                         <div class="card-body  ">
                                             <form id="formPayment" action="">
                                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                                    <input name="payment" type="radio">
+                                                    <input name="payment" value="COD" type="radio">
                                                     <label for="">COD</label>
-                                                    <input name="payment" type="radio">
+                                                    <input name="payment" value="online " type="radio">
                                                     <label for="">Online payment</label>
                                                 </div>
                                             </form>
-
                                         </div>
                                     </div>
-
                                 </div>
                                 <div class="col-lg-6 col-sm-12">
                                     <div class="card rounded-3 justify-content-between align-items-center mb-2 ">
-                                        <div id="totalDisplay"class="card-body  ">
-                                          
+                                        <div id="totalDisplay" class="card-body">
+                                        </div>
+                                        <div>
+                                            <div class="justify-content-between align-items-center ">
+                                                <button class="btn btn-success col-lg-6 col-sm-12"
+                                                    onclick=formSubmission()>Place order</button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -90,31 +90,56 @@
                         </div>
                     </div>
                 </div>
-        
+
             </section>
 
         </div>
     </div>
-<script>
-    const Addressform = document.getElementById('formAddress')
-     const payform = document.getElementById('formPayment')
-     const total = document.getElementById('totalDisplay')
-       
-      const fetchCart = async()=>{
-        let dataCart = await fetch('http://localhost:3000/user/getCart',{method:'GET'})
-        let response = await dataCart.json()
-        let cartArray =  response.cart.idAndQuantity
-        console.log(response.cart)
-        cartArray.forEach((obj)=>{
-        const quantityDisplay = document.createElement('h5')
-        quantityDisplay.className = "mb-1"
-        quantityDisplay.innerHTML = `<strong>Quantity : </strong>${obj.quantity}`
-        document.getElementById(`quantityDisplay${obj.id}`).appendChild(quantityDisplay)
-        })
-        let totalElement = document.createElement('h4')
-        totalElement.innerHTML =  `<strong>Total : </strong>${response.cart.total}`
-        total.appendChild(totalElement)
-      }
-      setTimeout(fetchCart,1000)
-</script>
+    <script>
+        const Addressform = document.getElementById('formAddress')
+        const paymentform = document.getElementById('formPayment')
+        const total = document.getElementById('totalDisplay')
+
+        const fetchCart = async () => {
+            let dataCart = await fetch('http://localhost:3000/user/getCart', { method: 'GET' })
+            let response = await dataCart.json()
+            let cartArray = response.cart.idAndQuantity
+            cartArray.forEach((obj) => {
+                const quantityDisplay = document.createElement('h5')
+                quantityDisplay.className = "mb-1"
+                quantityDisplay.innerHTML = `<strong>Quantity : </strong>${obj.quantity}`
+                document.getElementById(`quantityDisplay${obj.id}`).appendChild(quantityDisplay)
+            })
+            let totalElement = document.createElement('h4')
+            totalElement.innerHTML = `<strong>Total : </strong>${response.cart.total}`
+            total.appendChild(totalElement)
+        }
+
+        const formSubmission = async() => {
+            const formValues = {}
+            for(let i=0;i<Addressform.elements.length;i++){
+             if(Addressform.elements[i].checked){
+              formValues.F1 = Addressform.elements[i].value
+             }
+            }
+            for(let i=0;i<paymentform.elements.length;i++){
+             if(paymentform.elements[i].checked){
+            formValues.F2 = paymentform.elements[i].value
+             }
+            }
+            if(formValues.F2 && formValues.F1){
+            const form = new FormData()
+            form.append("address",formValues.F1)
+            form.append("payment",formValues.F2)
+            const sendForm = await fetch('/user/Checkout',{method:"POST",body:form})
+            const response = await sendForm.json()
+            }else if(!formValues.F2){
+                alert("please select a payment method")
+            }else if(!formValues.F1){
+                alert("please select your prefered address")
+            }
+
+        }
+        setTimeout(fetchCart, 1000)
+    </script>
 </body>

@@ -6,7 +6,7 @@ let Products
 const bcrypt = require('bcrypt');
 const USERMODEL = require('../schemas/userModel')
 const CART = require('../schemas/cartModel');
-const ORDER = require('../schemas/order');
+const ORDER = require('../schemas/orders');
 const { ObjectId } = require('mongodb');
 
 //to verify the user session valid or not to find userlogin
@@ -661,21 +661,21 @@ router.get("/address", async (req, res) => {
       }
     )
     for (let i = 0; i < findCart.idAndQuantity.length; i++) {
-        let findAndPushProduct = await PRODUCT.findOne(
-          {
-            _id:ObjectId(findCart.idAndQuantity[i].id)
-          }
-        )
-          productArray.push(findAndPushProduct)
-      }
-    
+      let findAndPushProduct = await PRODUCT.findOne(
+        {
+          _id: ObjectId(findCart.idAndQuantity[i].id)
+        }
+      )
+      productArray.push(findAndPushProduct)
+    }
+
     if (findAddress.address[0]
-    && findCart
+      && findCart
     ) {
-      let address = findAddress.address
+      let foundAddress = findAddress
       let cart = findCart
       let quantityArray = findCart.idAndQuantity
-      res.render('user/checkOut', { title: "Checkout", address ,cart , productArray,quantityArray})
+      res.render('user/checkOut', { title: "Checkout", foundAddress, cart, productArray, quantityArray })
     } else {
       res.render('user/checkOut', { title: "Checkout" })
     }
@@ -715,20 +715,48 @@ router.post("/address", async (req, res) => {
     console.log(err);
   }
 })
-router.get("/getCart",async(req,res)=>{
-  let userData= req.session.user 
+router.get("/getCart", async (req, res) => {
+  let userData = req.session.user
   let cart = await CART.findOne({
-    userEmail:userData.email
+    userEmail: userData.email
   })
-  res.json({"cart":cart})
+  res.json({ "cart": cart })
 })
 
-router.post("/Checkout",async(req,res)=>{
-  let userData= req.session.user 
-  let cart = await CART.findOne({
-    userEmail:userData.email
+router.post("/Checkout", async (req, res) => {
+  let userData = req.session.user
+  let selectedAddressPinPhone = []
+  let productArray = [] 
+  let adminEmail = []
+  let Methods = req.body
+  let preferedAddress = Methods.address.split(",")
+  for (let i = 0; i < preferedAddress.length; i++) {
+    let arr = preferedAddress[i].split(':')
+    selectedAddressPinPhone.push(arr[1])
+  }
+  let userCart = await CART.findOne(
+    {
+      userEmail: userData.email
+    }
+  )
+  for (let i = 0; i < userCart.idAndQuantity.length; i++) {
+    let product = await PRODUCT.findOne(
+      {
+        _id:ObjectId(userCart.idAndQuantity[i].id)
+      }
+    )
+    productArray.push(product)
+}
+  productArray.forEach((obj)=>{
+    let arr  = obj.userKey.split('_')
+    adminEmail.push(arr[0])
   })
-  res.json({"cart":cart})
+  console.log(adminEmail);
+  // let createOrder = await ORDER.create(
+  //   {
+
+  //   }
+  // )
 })
 
 module.exports = router;
