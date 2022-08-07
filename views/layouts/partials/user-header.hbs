@@ -1,6 +1,5 @@
-
-  <div class="sticky">
-    <nav class="navbar navbar-expand-lg navbar-light p-4 " id="navbar" style="
+<div class="sticky">
+  <nav class="navbar navbar-expand-lg navbar-light p-4 " id="navbar" style="
   position: sticky;
   background-color:rgba(2, 175, 45, 0.2);
   display: flex;
@@ -8,58 +7,64 @@
       top: 0; 
   
   width:100%; ">
-      <a class="navbar-brand text-dark pl-5" style="font-size:26px;" href="#"><strong>Shopy Cart </strong></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <a class="navbar-brand text-dark pl-5" style="font-size:26px;" href="#"><strong>Shopy Cart </strong></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <div class="collapse navbar-collapse " id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto pl-5 ">
-          <li class="nav-item active">
-            <a class="nav-link text-dark " style="" href="/user"> <i class="fa fa-home" aria-hidden="true"></i> Home<span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark " style="" href="/user/cart"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark " style="" href="/user/myorders"
-              >My orders</a>
-          </li>
-            </ul>
-
-        
-        
-      {{#if inAnyForm}}
-        {{else}}
-        <div class="dropdown show">
-          <a class="btn btn-secondary dropdown-toggle ml-5" href="#" role="button" id="dropdownMenuLink"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{#if notSignedUser}}
-              Account 
-              {{else}}
-                <i class="fa fa-user" aria-hidden="true"></i> 
-            {{/if}}
-          </a>
-          {{!-- {{#if inAnyForm}} --}}
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            {{#if notSignedUser}}
-            <a class="dropdown-item" href="user/signup">Signup</a>
-            <a class="dropdown-item" href="user/login">Login</a>
-
-            {{else}}
-              
-            <a class="dropdown-item" href="/admin">Sell your products</a>
-            <a class="dropdown-item" href="/user/profile"> <i class="fa fa-user" aria-hidden="true"></i> Profile </a>
-            <a class="dropdown-item" href="/user/settings"><i class="fa fa-cog" aria-hidden="true"></i> Settings</a>
-            <a class="dropdown-item" href="/user/logout"> <i class="fa fa-sign-out" aria-hidden="true"> </i>Logout </i></a>
-            {{/if}}
-          </div>
-          {{!-- {{/if}} --}}
-        </div>
-      {{/if}}
+    <div class="collapse navbar-collapse " id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto pl-5 ">
+        <li class="nav-item active">
+          <a class="nav-link text-dark " style="" href="/user"> <i class="fa fa-home" aria-hidden="true"></i> Home<span
+              class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark " style="" href="/user/cart"><i class="fa fa-shopping-cart"
+              aria-hidden="true"></i> Cart </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark " style="" href="/user/myorders">My orders</a>
+        </li>
+      </ul>
+    </div>
+    <form autocomplete="off" action="search" method="get">
+      <div class="autocomplete" style="width:300px;">
+        <input id="myInput" type="text" name="product" placeholder="Products" required>
       </div>
-    </nav>
-  </div>
+      <input class="search-submit" type="submit">
+    </form>
+  
+    {{#if inAnyForm}}
+    {{else}}
+    <div class="dropdown show">
+      <a class="btn btn-secondary dropdown-toggle ml-5" href="#" role="button" id="dropdownMenuLink"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{#if notSignedUser}}
+        Account
+        {{else}}
+        <i class="fa fa-user" aria-hidden="true"></i>
+        {{/if}}
+      </a>
+      {{!-- {{#if inAnyForm}} --}}
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        {{#if notSignedUser}}
+        <a class="dropdown-item" href="user/signup">Signup</a>
+        <a class="dropdown-item" href="user/login">Login</a>
+
+        {{else}}
+
+        <a class="dropdown-item" href="/admin">Sell your products</a>
+        <a class="dropdown-item" href="/user/profile"> <i class="fa fa-user" aria-hidden="true"></i> Profile </a>
+        <a class="dropdown-item" href="/user/settings"><i class="fa fa-cog" aria-hidden="true"></i> Settings</a>
+        <a class="dropdown-item" href="/user/logout"> <i class="fa fa-sign-out" aria-hidden="true"> </i>Logout
+          </i></a>
+        {{/if}}
+      </div>
+      {{!-- {{/if}} --}}
+    </div>
+    {{/if}}
+  </nav>
+</div>
 
 </header>

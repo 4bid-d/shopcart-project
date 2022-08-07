@@ -108,7 +108,8 @@
                 const quantityDisplay = document.createElement('h5')
                 quantityDisplay.className = "mb-1"
                 quantityDisplay.innerHTML = `<strong>Quantity : </strong>${obj.quantity}`
-                document.getElementById(`quantityDisplay${obj.id}`).appendChild(quantityDisplay)
+                let parent = document.getElementById(`quantityDisplay${obj.id}`)
+                parent.appendChild(quantityDisplay)
             })
             let totalElement = document.createElement('h4')
             totalElement.innerHTML = `<strong>Total : </strong>${response.cart.total}`

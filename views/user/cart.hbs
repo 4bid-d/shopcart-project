@@ -7,8 +7,8 @@
     <hr>
 
     {{!-- <div class="row" id="div1"> --}}
-
-      {{#each productArray}}
+      <div id="parent">
+        {{#each productArray}}
       <div class="card col-lg-12 col-sm-12 col-md-12 p-2  mb-3">
         <div class="row justify-content-between align-items-center" id="{{this._id}}">
           <div class="col-lg-2 col-12 md-6 col-sm-6 m-2 ">
@@ -44,16 +44,18 @@
 
       </div>
       {{/each}}
+      </div>
+      
       <hr>
       <section class="container  mt-3 pt-5">
 
         <div class="row d-flex justify-content-between align-items-center">
           <h3 style="float:left;">total:</h3>
           <h3 id="total" style="float:right;">{{Total}}</h3>
-          <div class=" col-lg-12 col-md-12 col-sm">
+          <div class="checkoutDiv col-lg-12 col-md-12 col-sm">
             <a href="/user" class="btn btn-success float-left m-2" style=""><i class="fa fa-arrow-left"
                 aria-hidden="true"></i> Back </a>
-            <a href="/user/address" class="btn btn-success float-right m-2 " style=""><i class="fa fa-shopping-bag"
+            <a href="/user/address" id="checkout" class="btn btn-success float-right m-2 " style=""><i class="fa fa-shopping-bag"
                 aria-hidden="true"></i> Checkout</a>
           </div>
         </div>
@@ -95,8 +97,6 @@
       let response = await data.json()
       total.innerHTML = response.total
       display.innerHTML = response.updatedValue
-
-
     } else {
 
     }
@@ -105,13 +105,13 @@
   }
   async function cartDelete(id) {
     const displayStatus = document.getElementById('deleteDisplay')
+    let specfiedDisplay = document.getElementById(id)
     if (confirm("Are sure to delete this item ?")) {
       let url = `http://localhost:3000/user/deleteCart/${id}`;
       let data = await fetch(url, { method: 'GET' })
       let response = await data.json()
       if (response.status) {
-        document.getElementById(id).remove()
-        document.getElementById(id).innerHTML = "Cart is Empty"
+        specfiedDisplay.remove()
         displayStatus.style.color = "green"
         displayStatus.innerHTML = "Deletion successful."
         total.innerHTML = response.total
@@ -124,6 +124,8 @@
     }
 
   }
+
+    
 
 </script>
 

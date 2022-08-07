@@ -8,6 +8,7 @@ const USERMODEL = require('../schemas/userModel')
 const CART = require('../schemas/cartModel');
 const ORDER = require('../schemas/orders');
 const { ObjectId } = require('mongodb');
+const { query } = require('express');
 
 //to verify the user session valid or not to find userlogin
 const verifyLogin = (req, res) => {
@@ -74,46 +75,55 @@ router.get('/', async function (req, res, next) {
 //cart router
 router.get('/cart', async (req, res) => {
 
-  const userDetail = req.session.user
+  try {
+    const userDetail = req.session.user
 
-  //  calling varify login function to verify user
+    //  calling varify login function to verify user
 
-  //  verifyLogin(req, res)
-  if (verifyLogin(req, res)) {
-    let productArray = []
-    let requestedUserCart = await CART.findOne(
-      {
-        userEmail: userDetail.email
-      }
-    )
-    //taking the array contains id and quantity of product
-    let productsIdAndQuantityArray = requestedUserCart.idAndQuantity
-    let Total = requestedUserCart.total
-    //looping to find the product from the products db with the ids of productsIdAndQuantityArray[]
-    for (let i = 0; i < productsIdAndQuantityArray.length; i++) {
-      let product = await PRODUCT.findOne(
+    //  verifyLogin(req, res)
+    if (verifyLogin(req, res)) {
+      let productArray = []
+      let requestedUserCart = await CART.findOne(
         {
-          _id: ObjectId(productsIdAndQuantityArray[i].id)
+          userEmail: userDetail.email
         }
       )
-      let quantity = productsIdAndQuantityArray[i].quantity
-      productArray.push(product)
-      productArray[i].quantity = quantity
-    }
+      if (requestedUserCart) {
+        //taking the array contains id and quantity of product
+        let productsIdAndQuantityArray = requestedUserCart.idAndQuantity
+        let Total = requestedUserCart.total
+        //looping to find the product from the products db with the ids of productsIdAndQuantityArray[]
+        for (let i = 0; i < productsIdAndQuantityArray.length; i++) {
+          let product = await PRODUCT.findOne(
+            {
+              _id: ObjectId(productsIdAndQuantityArray[i].id)
+            }
+          )
+          let quantity = productsIdAndQuantityArray[i].quantity
+          productArray.push(product)
+          productArray[i].quantity = quantity
+        }
 
-    res.render('user/cart',
-      {
-        title: "Cart",
-        Total,
-        productArray,
-        userDetail,
-        admin: false,
-        notSignedUser: false,
-        inAnyForm: false
+        res.render('user/cart',
+          {
+            title: "Cart",
+            Total,
+            productArray,
+            userDetail,
+            admin: false,
+            notSignedUser: false,
+            inAnyForm: false
+          }
+        )
+
+      } else {
+        res.send("cart not found")
       }
-    )
-
+    }
+  } catch (err) {
+    console.log(err)
   }
+
 })
 
 //addtocart router
@@ -240,183 +250,195 @@ router.get('/addToCart/:proId', async (req, res) => {
 
 router.get('/quantityIecrement/:id/:updateVal', async (req, res) => {
 
-  if (verifyLogin(req, res)) {
-    const productId = req.params.id
-    const userDetail = req.session.user
-    let updateValue = req.params.updateVal
-    let updatedArray = []
-    const findProduct = await PRODUCT.findOne(
-      {
-        _id: ObjectId(productId)
-      }
-    )
-    updateValue++
-
-    let find = await CART.findOne(
-      {
-        userEmail: userDetail.email,
-        idAndQuantity: {
-          $elemMatch: {
-            id: productId
-          }
-        }
-      }
-    )
-    find.idAndQuantity.forEach(function (obj) {
-      if (obj.id == productId) {
-        obj.quantity = updateValue
-        updatedArray.push(obj)
-      } else updatedArray.push(obj)
-    }
-    )
-    let updateDb = await CART.updateOne(
-      {
-        userEmail: userDetail.email,
-        idAndQuantity:
+  try {
+    if (verifyLogin(req, res)) {
+      const productId = req.params.id
+      const userDetail = req.session.user
+      let updateValue = req.params.updateVal
+      let updatedArray = []
+      const findProduct = await PRODUCT.findOne(
         {
-          $elemMatch:
-          {
-            id: productId
+          _id: ObjectId(productId)
+        }
+      )
+      updateValue++
+
+      let find = await CART.findOne(
+        {
+          userEmail: userDetail.email,
+          idAndQuantity: {
+            $elemMatch: {
+              id: productId
+            }
           }
         }
-      },
-      {
-        total: find.total + findProduct.Price,
-        idAndQuantity: updatedArray
+      )
+      find.idAndQuantity.forEach(function (obj) {
+        if (obj.id == productId) {
+          obj.quantity = updateValue
+          updatedArray.push(obj)
+        } else updatedArray.push(obj)
       }
-    )
-    if (updateDb) res.json(
-      {
-        "updatedValue": updateValue,
-        "total": find.total + findProduct.Price
-      }
-    )
-    else res.json(
-      {
-        "updatedValue": updateValue--
-      }
-    )
+      )
+      let updateDb = await CART.updateOne(
+        {
+          userEmail: userDetail.email,
+          idAndQuantity:
+          {
+            $elemMatch:
+            {
+              id: productId
+            }
+          }
+        },
+        {
+          total: find.total + findProduct.Price,
+          idAndQuantity: updatedArray
+        }
+      )
+      if (updateDb) res.json(
+        {
+          "updatedValue": updateValue,
+          "total": find.total + findProduct.Price
+        }
+      )
+      else res.json(
+        {
+          "updatedValue": updateValue--
+        }
+      )
 
+    }
+  } catch (error) {
+    console.log(error)
   }
 })
 
 router.get('/quantityDecrement/:id/:updateVal', async (req, res) => {
-  if (verifyLogin(req, res)) {
-    const productId = req.params.id
-    const userDetail = req.session.user
-    let updateValue = req.params.updateVal
-    let updatedArray = []
-    const findProduct = await PRODUCT.findOne(
-      {
-        _id: ObjectId(productId)
-      }
-    )
-    updateValue--
-    let find = await CART.findOne(
-      {
-        userEmail: userDetail.email,
-        idAndQuantity: {
-          $elemMatch: {
-            id: productId
-          }
-        }
-      }
-    )
-
-    find.idAndQuantity.forEach(function (obj) {
-      if (obj.id == productId) {
-        obj.quantity = updateValue
-        updatedArray.push(obj)
-      } else updatedArray.push(obj)
-    })
-
-    let updateDb = await CART.updateOne(
-      {
-        userEmail: userDetail.email,
-        idAndQuantity:
+  try {
+    if (verifyLogin(req, res)) {
+      const productId = req.params.id
+      const userDetail = req.session.user
+      let updateValue = req.params.updateVal
+      let updatedArray = []
+      const findProduct = await PRODUCT.findOne(
         {
-          $elemMatch:
-          {
-            id: productId
+          _id: ObjectId(productId)
+        }
+      )
+      updateValue--
+      let find = await CART.findOne(
+        {
+          userEmail: userDetail.email,
+          idAndQuantity: {
+            $elemMatch: {
+              id: productId
+            }
           }
         }
-      },
-      {
-        total: find.total - findProduct.Price,
-        idAndQuantity: updatedArray
-      }
-    )
+      )
 
-    if (updateDb) res.json(
-      {
-        "updatedValue": updateValue,
-        "total": find.total - findProduct.Price
-      }
-    )
-    else res.json(
-      {
-        "updatedValue": updateValue--
-      }
-    )
+      find.idAndQuantity.forEach(function (obj) {
+        if (obj.id == productId) {
+          obj.quantity = updateValue
+          updatedArray.push(obj)
+        } else updatedArray.push(obj)
+      })
 
+      let updateDb = await CART.updateOne(
+        {
+          userEmail: userDetail.email,
+          idAndQuantity:
+          {
+            $elemMatch:
+            {
+              id: productId
+            }
+          }
+        },
+        {
+          total: find.total - findProduct.Price,
+          idAndQuantity: updatedArray
+        }
+      )
+
+      if (updateDb) res.json(
+        {
+          "updatedValue": updateValue,
+          "total": find.total - findProduct.Price
+        }
+      )
+      else res.json(
+        {
+          "updatedValue": updateValue--
+        }
+      )
+
+    }
+  } catch (error) {
+    console.log(error);
   }
 })
 
 router.get('/deleteCart/:id', async (req, res) => {
-  if (verifyLoginFetch(req, res)) {
-    const productId = req.params.id
-    const userDetail = req.session.user
-    let updatedArray = []
-    let quantityOfDeleteProduct
-    let product = await PRODUCT.findOne({
-      _id: ObjectId(productId)
-    })
-    let deleteCart = await CART.findOne(
-      {
-        userEmail: userDetail.email,
-        idAndQuantity: {
-          $elemMatch:
-          {
-            id: productId
-          }
-        }
-      }
-    )
-    deleteCart.idAndQuantity.forEach(function (obj) {
-      if (obj.id !== productId) {
-        updatedArray.push(obj)
-      } else {
-        quantityOfDeleteProduct = obj.quantity
-      }
-    })
-    let productPrize = product.Price * quantityOfDeleteProduct
-    let updateDb = await CART.updateOne(
-      {
-        userEmail: userDetail.email,
-        idAndQuantity:
+  try {
+    if (verifyLoginFetch(req, res)) {
+      const productId = req.params.id
+      const userDetail = req.session.user
+      let updatedArray = []
+      let quantityOfDeleteProduct
+      let product = await PRODUCT.findOne({
+        _id: ObjectId(productId)
+      })
+      let deleteCart = await CART.findOne(
         {
-          $elemMatch:
-          {
-            id: productId
+          userEmail: userDetail.email,
+          idAndQuantity: {
+            $elemMatch:
+            {
+              id: productId
+            }
           }
         }
-      },
-      {
-        idAndQuantity: updatedArray,
-        total: deleteCart.total - productPrize
-      }
-    )
-    if (updateDb) res.json(
-      {
-        "status": true,
-        "total": deleteCart.total - productPrize
-      }
-    )
-    else res.json(
-      {
-        "status": false
-      }
-    )
+      )
+      deleteCart.idAndQuantity.forEach(function (obj) {
+        if (obj.id !== productId) {
+          updatedArray.push(obj)
+        } else {
+          quantityOfDeleteProduct = obj.quantity
+        }
+      })
+      let productPrize = product.Price * quantityOfDeleteProduct
+      let updateDb = await CART.updateOne(
+        {
+          userEmail: userDetail.email,
+          idAndQuantity:
+          {
+            $elemMatch:
+            {
+              id: productId
+            }
+          }
+        },
+        {
+          idAndQuantity: updatedArray,
+          total: deleteCart.total - productPrize
+        }
+      )
+      if (updateDb) res.json(
+        {
+          "status": true,
+          "total": deleteCart.total - productPrize
+        }
+      )
+      else res.json(
+        {
+          "status": false
+        }
+      )
+    }
+  } catch (error) {
+    console.log(error)
   }
 })
 
@@ -558,127 +580,140 @@ router.post('/login', async (req, res) => {
 
 router.post('/signup/signupData', async (req, res) => {
 
-  let signInError = ""
-  const signupDetails = req.body
-  if (
-    signupDetails.pass &&
-    signupDetails.email &&
-    signupDetails.fName &&
-    signupDetails.lName
-  ) {
-    const bycryptedPass = await bcrypt.hash(signupDetails.pass, 10)
-    let signupStatus = false
-    let serverResponseSignup = {}
-    var emailChecking = await USERMODEL.findOne(
-      {
-        email: signupDetails.email
-      }
-    )
-    if (emailChecking) {
-      signInError = "You are already a member please login"
-      signupStatus = false
-      res.render('user/signup', {
-        signInError
-      }
+  try {
+    let signInError = ""
+    const signupDetails = req.body
+    if (
+      signupDetails.pass &&
+      signupDetails.email &&
+      signupDetails.fName &&
+      signupDetails.lName
+    ) {
+      const bycryptedPass = await bcrypt.hash(signupDetails.pass, 10)
+      let signupStatus = false
+      let serverResponseSignup = {}
+      var emailChecking = await USERMODEL.findOne(
+        {
+          email: signupDetails.email
+        }
       )
-    } else {
-      try {
-        userData = await USERMODEL.create(
-          {
-            firstName: signupDetails.fName,
-            LastName: signupDetails.lName,
-            email: signupDetails.email,
-            passWord: bycryptedPass
-          }
+      if (emailChecking) {
+        signInError = "You are already a member please login"
+        signupStatus = false
+        res.render('user/signup', {
+          signInError
+        }
         )
-        signupStatus = true
-
-      } catch (err) {
-        console.log(err)
-      } finally {
-        if (signupStatus) {
-          let dbSession = await USERMODEL.findOne(
+      } else {
+        try {
+          userData = await USERMODEL.create(
             {
-              email: signupDetails.email
+              firstName: signupDetails.fName,
+              LastName: signupDetails.lName,
+              email: signupDetails.email,
+              passWord: bycryptedPass
             }
           )
-          req.session.loggedIn = true
-          req.session.user = dbSession
-          res.redirect('/user')
+          signupStatus = true
 
+        } catch (err) {
+          console.log(err)
+        } finally {
+          if (signupStatus) {
+            let dbSession = await USERMODEL.findOne(
+              {
+                email: signupDetails.email
+              }
+            )
+            req.session.loggedIn = true
+            req.session.user = dbSession
+            res.redirect('/user')
+
+          }
         }
-      }
 
-    }
-  } else {
-    signInError = "In sufficient details entered"
-    res.json(
-      {
-        "message": "In sufficient details entered"
-      }).render('user/signup',
+      }
+    } else {
+      signInError = "In sufficient details entered"
+      res.json(
         {
-          signInError
-        })
+          "message": "In sufficient details entered"
+        }).render('user/signup',
+          {
+            signInError
+          })
+    }
+  } catch (error) {
+    console.log(error);
   }
 
 })
 
 router.get('/productView/:id', async (req, res) => {
 
-  const userDetail = req.session.user
-  const productId = req.params.id
-  const findData = await PRODUCT.findOne(
-    {
-      _id: productId
+  try {
+    const userDetail = req.session.user
+    const productId = req.params.id
+    const findData = await PRODUCT.findOne(
+      {
+        _id: productId
+      }
+    )
+    const foundedData = findData
+    res.render('user/productView', {
+      foundedData,
+      title: `${findData.productName}`,
+      userDetail,
+      admin: false,
+      user: true,
+      notSignedUser: false,
+      inAnyForm: false
     }
-  )
-  const foundedData = findData
-  res.render('user/productView', {
-    foundedData,
-    title: `${findData.productName}`,
-    userDetail,
-    admin: false,
-    user: true,
-    notSignedUser: false,
-    inAnyForm: false
+    )
+  } catch (error) {
+    console.log(error);
   }
-  )
 })
-router.get("/address", async (req, res) => {
 
-  if (verifyLogin(req, res)) {
-    let user = req.session.user
-    let productArray = []
-    console.log(user.email);
-    let findAddress = await USERMODEL.findOne(
-      {
-        email: user.email
-      }
-    )
-    let findCart = await CART.findOne(
-      {
-        email: user.email
-      }
-    )
-    for (let i = 0; i < findCart.idAndQuantity.length; i++) {
-      let findAndPushProduct = await PRODUCT.findOne(
+router.get("/address", async (req, res) => {
+  try {
+    if (verifyLogin(req, res)) {
+      let userDetail = req.session.user
+      let productArray = []
+      console.log(userDetail);
+      let findAddress = await USERMODEL.findOne(
         {
-          _id: ObjectId(findCart.idAndQuantity[i].id)
+          email: userDetail.email
         }
       )
-      productArray.push(findAndPushProduct)
-    }
+      let findCart = await CART.findOne(
+        {
+          userEmail: userDetail.email
+        }
+      )
+      console.log(findCart)
+      for (let i = 0; i < findCart.idAndQuantity.length; i++) {
+        let findAndPushProduct = await PRODUCT.findOne(
+          {
+            _id: ObjectId(findCart.idAndQuantity[i].id)
+          }
+        )
+        productArray.push(findAndPushProduct)
+      }
 
-    if (findAddress.address[0]
-      && findCart
-    ) {
-      let foundAddress = findAddress
-      let cart = findCart
-      let quantityArray = findCart.idAndQuantity
-      res.render('user/checkOut', { title: "Checkout", foundAddress, cart, productArray, quantityArray })
-    } else {
-      res.render('user/checkOut', { title: "Checkout" })
+      if (findAddress.address[0]
+        && findCart
+      ) {
+        let foundAddress = findAddress
+        let cart = findCart
+        let quantityArray = findCart.idAndQuantity
+        res.render('user/checkOut', { title: "Checkout", foundAddress, cart, productArray, quantityArray })
+      } else {
+        res.render('user/checkOut', { title: "Checkout" })
+      }
     }
+  } catch (err) {
+    console.log(err)
   }
 })
 router.get('/addForm', (req, res) => {
@@ -724,59 +759,100 @@ router.get("/getCart", async (req, res) => {
 })
 
 router.post("/Checkout", async (req, res) => {
-  if(verifyLoginFetch(req,res)){
-    let userData = req.session.user
-    let selectedAddressPinPhone = []
-    let productArray = [] 
-    let adminEmail = []
-    let Methods = req.body
-    let preferedAddress = Methods.address.split(",")
-    for (let i = 0; i < preferedAddress.length; i++) {
-      let arr = preferedAddress[i].split(':')
-      selectedAddressPinPhone.push(`${arr[0]}:${arr[1]}`)
-    }
-    let userCart = await CART.findOne(
-      {
-        userEmail: userData.email
+  try {
+    if (verifyLoginFetch(req, res)) {
+      let userData = req.session.user
+      let selectedAddressPinPhone = []
+      let productArray = []
+      let adminEmail = []
+      let Methods = req.body
+      let preferedAddress = Methods.address.split(",")
+      for (let i = 0; i < preferedAddress.length; i++) {
+        let arr = preferedAddress[i].split(':')
+        selectedAddressPinPhone.push(`${arr[0]}:${arr[1]}`)
       }
-    )
-    for (let i = 0; i < userCart.idAndQuantity.length; i++) {
-      let product = await PRODUCT.findOne(
+      let userCart = await CART.findOne(
         {
-          _id:ObjectId(userCart.idAndQuantity[i].id)
+          userEmail: userData.email
         }
       )
-      productArray.push(
+      for (let i = 0; i < userCart.idAndQuantity.length; i++) {
+        let product = await PRODUCT.findOne(
+          {
+            _id: ObjectId(userCart.idAndQuantity[i].id)
+          }
+        )
+        productArray.push(
+          {
+            productId: product._id,
+            userKey: product.userKey
+          }
+        )
+      }
+      productArray.forEach((obj) => {
+        let arr = obj.userKey.split('_')
+        adminEmail.push(arr[0])
+      })
+
+      let createOrder = await ORDER.create(
         {
-          productId:product._id,
-          image:product.imgId,
-          price:product.Price,
-          userKey:product.userKey
+          customerEmail: userData.email,
+          delivery: selectedAddressPinPhone,
+          userDetails: userData.firstName,
+          paymentMethod: Methods.payment,
+          total: userCart.total,
+          productDetail: productArray,
+          displayOrderTo: adminEmail
         }
       )
+      if (createOrder) {
+        res.json({ "status": true })
+      } else {
+        res.json({ "status": false })
+      }
+
+    }
+  } catch (err) {
+    console.log(err)
   }
-    productArray.forEach((obj)=>{
-      let arr  = obj.userKey.split('_')
-      adminEmail.push(arr[0])
-    })
-  
-    let createOrder = await ORDER.create(
+})
+router.get('/getProducts', async (req, res) => {
+  let newArr = []
+  let products = await PRODUCT.find(
+
+    {
+      admin: true
+    }
+  )
+  for (let i = 0; i < products.length; i++) {
+    newArr.push(products[i].productName)
+    newArr.push(products[i].category)
+  }
+  res.json({ newArr })
+})
+
+router.get('/search', async (req, res) => {
+  let product
+  let filteredArray
+  let filteredProduct
+  let data = req.query['product']
+  if (data) {
+    product = await PRODUCT.find(
       {
-        customerEmail:userData.email,
-        delivery:selectedAddressPinPhone,
-        userDetails:userData.firstName,
-        paymentMethod:Methods.payment,
-        total:userCart.total,
-        productDetail:productArray,
-        displayOrderTo:adminEmail
+        admin: true
       }
     )
-    if (createOrder) {
-      res.json({"status":true})
-    }else{
-      res.json({"status":false})
+
+    for (let i = 0; i < product.length; i++) {
+      filteredArray = []
+      filteredProduct = product.filter((obj) => {
+        return obj.productName == data || obj.category == data
+      })
+      filteredArray.push(filteredProduct)
     }
-  
+     let searchResult = filteredArray[0] 
+    console.log(filteredArray[0])
+    res.render('search',{title:"Search",searchResult})
   }
 })
 
