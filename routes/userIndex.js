@@ -9,6 +9,7 @@ const CART = require('../schemas/cartModel');
 const ORDER = require('../schemas/orders');
 const { ObjectId } = require('mongodb');
 const { query } = require('express');
+const orders = require('../schemas/orders');
 
 //to verify the user session valid or not to find userlogin
 const verifyLogin = (req, res) => {
@@ -38,12 +39,27 @@ router.get('/', async function (req, res, next) {
 
   const userSession = req.session
   const userDetail = userSession.user
-
-  Products = await PRODUCT.find(
+  let Products = []
+  let remainedProducts = []
+  const retainedProducts = await PRODUCT.find(
     {
       admin: "true"
     }
   )
+  let randomCount = Math.floor(Math.random() * retainedProducts.length)
+  if (randomCount == retainedProducts.length || randomCount == retainedProducts.length - 3) {
+    randomCount = Math.floor(Math.random() * retainedProducts.length)
+  }
+
+  for (let i=randomCount ; i < retainedProducts.length; i++) {
+    Products.push(retainedProducts[i])
+    i++
+  }
+  console.log("1st",Products)
+  for (let i = 0; i < randomCount;i++) {
+    Products.push(retainedProducts[i])
+  }
+  console.log("2nd",Products)
   //for turn displaying user details by checking loggedin variable in session
   if (userSession.loggedIn) {
     res.render('user/userHome',
@@ -442,9 +458,15 @@ router.get('/deleteCart/:id', async (req, res) => {
   }
 })
 
-router.get('/myorders', (req, res) => {
+router.get('/myorders', async (req, res) => {
   const userDetail = req.session.user
   if (verifyLogin(req, res)) {
+    let orders = await ORDER.find(
+      {
+        customerEmail: userDetail.email
+      }
+    )
+    console.log(orders)
     res.render('user/orders', {
       title: "My orders",
       userDetail,
@@ -850,9 +872,13 @@ router.get('/search', async (req, res) => {
       })
       filteredArray.push(filteredProduct)
     }
-     let searchResult = filteredArray[0] 
-    console.log(filteredArray[0])
-    res.render('search',{title:"Search",searchResult})
+    let searchResult = filteredArray[0]
+    if (searchResult === []) {
+      let searchError = "Not Found ..."
+      res.render('search', { title: "Search", searchError })
+    } else {
+      res.render('search', { title: "Search", searchResult })
+    }
   }
 })
 

@@ -161,64 +161,70 @@ router.post("/edited/:objId", async (req, res) => {
 })
 
 router.post("/upload", async function (req, res) {
-  let productsDetails = req.body
-  let userDetails = req.session.user
-  async function productUpload() {
-    let imgId = uuidv4()
+  try {
+    async function productUpload() {
+    let image = req.files
+    if (!image || !req.body) {return false}
+      const imageSendForProduct = req.files.image
+      let productsDetails = req.body
+      let userDetails = req.session.user
 
-    let productNumber = await PRODUCT.countDocuments(
-      {
-        admin: "true"
+        let imgId = uuidv4()
+
+        let productNumber = await PRODUCT.countDocuments(
+          {
+            admin: "true"
+          }
+        )
+
+        if (productNumber === 0) {
+          Product = await PRODUCT.create(
+            {
+              userKey: `${userDetails.email}_${userDetails._id}`,
+              number: 0,
+              imgId: imgId,
+              productName: productsDetails.productName,
+              category: productsDetails.category,
+              Price: productsDetails.Price,
+              desc: productsDetails.desc,
+            }
+          );
+        }
+        else {
+          Product = await PRODUCT.create(
+            {
+              userKey: `${userDetails.email}_${userDetails._id}`,
+              number: productNumber,
+              imgId: imgId,
+              productName: productsDetails.productName,
+              category: productsDetails.category,
+              Price: productsDetails.Price,
+              desc: productsDetails.desc,
+            }
+          );
+        }
+        if (imageSendForProduct) {
+          await imageSendForProduct.mv(`public/images/${imgId}.jpg`)
+          return true
+        } 
       }
-    )
-
-    if (productNumber === 0) {
-      Product = await PRODUCT.create(
-        {
-          userKey: `${userDetails.email}_${userDetails._id}`,
-          number: 0,
-          imgId: imgId,
-          productName: productsDetails.productName,
-          category: productsDetails.category,
-          Price: productsDetails.Price,
-          desc: productsDetails.desc,
+      if (verifyLogin(req, res)) {
+        if (productUpload()) {
+          res.json(
+            {
+              "Status": true
+            }
+          )
+        } else {
+          res.json(
+            {
+              "Status": false
+            }
+          )
         }
-      );
-    }
-    else {
-      Product = await PRODUCT.create(
-        {
-          userKey: `${userDetails.email}_${userDetails._id}`,
-          number: productNumber,
-          imgId: imgId,
-          productName: productsDetails.productName,
-          category: productsDetails.category,
-          Price: productsDetails.Price,
-          desc: productsDetails.desc,
-        }
-      );
-    }
-
-    const imageSendForProduct = req.files.image
-    await imageSendForProduct.mv(`public/images/${imgId}.jpg`)
-    return true
-    // res.render('admin/admin-added-products',{title:'added products',userDetails,admin:true})
-  }
-
-  if (verifyLogin(req, res)) {
-    if (productUpload()) {
-      res.json(
-        {
-          "Status": true
-        }
-      )
-    } else {
-      res.json(
-        {
-          "Status": false
-        }
-      )
-    }
+      }
+  } catch (err) {
+    console.log(err)
   }
 });
 
