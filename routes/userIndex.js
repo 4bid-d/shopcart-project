@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const USERMODEL = require('../schemas/userModel')
 const CART = require('../schemas/cartModel');
 const ORDER = require('../schemas/orders');
+const COMMENT = require('../schemas/comment');
 const { ObjectId } = require('mongodb');
 const { query } = require('express');
 const orders = require('../schemas/orders');
@@ -51,15 +52,13 @@ router.get('/', async function (req, res, next) {
     randomCount = Math.floor(Math.random() * retainedProducts.length)
   }
 
-  for (let i=randomCount ; i < retainedProducts.length; i++) {
+  for (let i = randomCount; i < retainedProducts.length; i++) {
     Products.push(retainedProducts[i])
     i++
   }
-  console.log("1st",Products)
-  for (let i = 0; i < randomCount;i++) {
+  for (let i = 0; i < randomCount; i++) {
     Products.push(retainedProducts[i])
   }
-  console.log("2nd",Products)
   //for turn displaying user details by checking loggedin variable in session
   if (userSession.loggedIn) {
     res.render('user/userHome',
@@ -674,18 +673,43 @@ router.post('/signup/signupData', async (req, res) => {
 router.get('/productView/:id', async (req, res) => {
 
   try {
-    const userDetail = req.session.user
+    const user = req.session.user
     const productId = req.params.id
+    let commentArray= []
+    let userArray = []
     const findData = await PRODUCT.findOne(
       {
         _id: productId
       }
     )
+    const findComments = await COMMENT.find(
+      {
+        productId:productId
+      }
+    )
+    if(findComments[0]){
+  
+      let array = findComments[0].comments;
+      for (let i = 0; i < array.length; i++) {
+        commentArray.push(array[i])
+      }
+      for (let i = 0; i < commentArray.length; i++) {
+        let userDetails = await USERMODEL.find(
+          {
+            email:commentArray[i].userEmail
+          }
+        ) 
+        userArray.push(userDetails[0])       
+      }
+    }
+    console.log(userArray)
     const foundedData = findData
     res.render('user/productView', {
       foundedData,
+      commentArray,
+      userArray,
       title: `${findData.productName}`,
-      userDetail,
+      user,
       admin: false,
       user: true,
       notSignedUser: false,
@@ -878,6 +902,58 @@ router.get('/search', async (req, res) => {
       res.render('search', { title: "Search", searchError })
     } else {
       res.render('search', { title: "Search", searchResult })
+    }
+  }
+})
+
+router.get("/comments/:id/:value", async (req, res) => {
+  if (verifyLoginFetch(req, res)) {
+    let userDetails = req.session.user
+    let productId = req.params.id
+    let message = req.params.value
+    const findExistingCommentForSameProduct = await COMMENT.findOne(
+      {
+        productId: productId
+      }
+    )
+    
+    if (findExistingCommentForSameProduct === null) {
+      let allComments = []
+      allComments.push(
+        {
+          userEmail: userDetails.email,
+          message: message
+        }
+      )
+      await COMMENT.create(
+        {
+          productId: productId,
+          comments: allComments
+        }
+      )
+      res.json({
+        message: "successfully commented"
+      })
+    } else {
+      let newcommentsArray = []
+      for (let i = 0; i < findExistingCommentForSameProduct.comments.length; i++) {
+        newcommentsArray.push(findExistingCommentForSameProduct.comments[i])
+      }
+      newcommentsArray.push({
+        userEmail: userDetails.email,
+        message: message
+      })
+      await COMMENT.updateOne(
+        {
+          productId: productId,
+        },
+        {
+          comments: newcommentsArray
+        }
+        )
+        res.json({
+          message: "successfully commented"
+        })
     }
   }
 })

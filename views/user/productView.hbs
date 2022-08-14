@@ -1,3 +1,127 @@
+<header>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<style>
+		.navbar-nav {
+			width: 100%;
+		}
+
+		@media(min-width:568px) {
+			.end {
+				margin-left: auto;
+			}
+		}
+
+		@media(max-width:768px) {
+			#post {
+				width: 100%;
+			}
+		}
+
+		#clicked {
+			padding-top: 1px;
+			padding-bottom: 1px;
+			text-align: center;
+			width: 100%;
+			background-color: #ecb21f;
+			border-color: #a88734 #9c7e31 #846a29;
+			color: black;
+			border-width: 1px;
+			border-style: solid;
+			border-radius: 13px;
+		}
+
+		#profile {
+			background-color: unset;
+
+		}
+
+
+		body {
+			background-color: black;
+		}
+
+
+
+
+
+		.comments {
+			margin-top: 5%;
+			margin-left: 20px;
+		}
+
+		.darker {
+			border: 1px solid #ecb21f;
+			background-color: black;
+			float: right;
+			border-radius: 5px;
+			padding-left: 40px;
+			padding-right: 30px;
+			padding-top: 10px;
+		}
+
+		.comment {
+			border: 1px solid rgba(16, 46, 46, 1);
+			background-color: rgba(2, 175, 45, .654);
+			float: left;
+			border-radius: 5px;
+			padding-left: 40px;
+			padding-right: 30px;
+			padding-top: 10px;
+
+		}
+
+		.comment h4,
+		.comment span,
+		.darker h4,
+		.darker span {
+			display: inline;
+		}
+
+		.comment p,
+		.comment span,
+		.darker p,
+		.darker span {
+			color: black;
+		}
+
+		h1,
+		h4 {
+			color: white;
+			font-weight: bold;
+		}
+
+		label {
+			color: rgb(212, 208, 208);
+		}
+
+		#align-form {
+			margin-top: 20px;
+		}
+
+		.form-group p a {
+			color: white;
+		}
+
+		#checkbx {
+			background-color: black;
+		}
+
+		#darker img {
+			margin-right: 15px;
+			position: static;
+		}
+
+		.form-group input,
+		.form-group textarea {
+			background-color: black;
+			border: 1px solid rgba(16, 46, 46, 1);
+			border-radius: 12px;
+		}
+	</style>
+</header>
+
+
 <body id="body">
 
 
@@ -41,34 +165,168 @@
 								<h4 class="price">current price: <span>₹ {{foundedData.Price}}</span></h4>
 								<p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87
 										votes)</strong></p>
-								<div class="action">
-									<button class="add-to-cart btn btn-default" onclick=addCart("{{foundedData._id}}")
+								<div class="row action">
+									<button class="add-to-cart btn btn-success" onclick=addCart("{{foundedData._id}}")
 										type="button">Add to cart</a></button>
 									{{!-- <button class="like btn btn-default" type="button"><span
 											class="fa fa-heart"></span></button> --}}
+									<button class="btn btn-success mt-2" type="button" data-bs-toggle="offcanvas"
+										data-bs-target="#offcanvasRight"
+										aria-controls="offcanvasRight">Comments</button>
+								</div>
+
+								<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
+									aria-labelledby="offcanvasRightLabel">
+									<div class="offcanvas-header">
+										<h5 id="offcanvasRightLabel"></h5>
+										<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+											aria-label="Close"></button>
+									</div>
+									<div class="offcanvas-body" style="overflow-x: hidden;">
+										<section>
+											<div class="container">
+												<div class="row">
+													<div class="col-lg-12 col-sm-5 col-md-6  pb-4">
+														<h1 style="color: black;">Feedbacks</h1>
+														<div id="userNames">
+															{{#each userArray}}
+															<input class="hiddenValues" value={{this.firstName}}{{this.LastName}}  type="text" hidden>
+															{{/each}}
+														</div>
+														<div class="row">
+															<div class="col-lg-12">
+																{{#each commentArray}}
+																<div class="comment mt-4 text-justify float-left">
+																<span class="displayUser"></span>
+																	<p style="max-width: 8rem;">
+																		
+																		{{this.message}}
+																	</p>
+
+																</div>
+																<br>
+																{{/each}}
+																<div id="demo-append"></div>
+															</div>
+														</div>
+														{{!-- <h4>Jhon Doe</h4> --}}
+													</div>
+
+												</div>
+											</div>
+										</section>
+
+										<button type="button" class="btn btn-success col-lg-12" style=""
+											data-toggle="modal" data-target="#exampleModal">
+											Post your Comment
+										</button>
+
+										<!-- Modal -->
+										<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+											aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="exampleModalLabel">Post your Opinon
+														</h5>
+														<button type="button" class="close" data-dismiss="modal"
+															aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+
+														<div class="container p-4">
+															<div class="d-flex row">
+																<div class="col-lg-12">
+																	<div class="d-flex flex-column comment-section">
+
+																		<div class="bg-light m-3">
+																			<div class="mt-2 text-right">
+
+																				<form id="inputForm"
+																					class="form-inline">
+																					<textarea
+																						class="form-control shadow-none textarea col-sm-12 col-lg-12 col-md-12"
+																						type="text" name="message"
+																						placeholder="Comment"
+																						required></textarea>
+																				</form>
+
+
+																				<button
+																					onclick=commentSubmission("{{foundedData._id}}")
+																					class="btn btn-success btn-sm col-sm-12 col-lg-12 col-md-12 m-2 "><i
+																						class="fa fa-paper-plane"
+																						aria-hidden="true"></i></button>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+
+													</div>
+												</div>
+											</div>
+
+										</div>
+									</div>
+
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<script>
-				const addCart = async (id) => {
-					const addProduct = await fetch(`/user/addToCart/${id}`, { method: "GET" })
-					const response = await addProduct.json()
-					if (response.message) {
-						alert(response.message)
-					}else{
-						alert("please login and try again")
-						window.location.href = "/login"
+				<script>
+					const appendUsers = ()=>{
+						const dataElements = document.querySelectorAll(".hiddenValues")
+						const allDisplay = document.querySelectorAll('.displayUser')
+						let allInputValue = []
+						dataElements.forEach((obj)=>{
+							allInputValue.push(obj.value)
+						})
+						for(i=0;i<allInputValue.length;i++){
+							allDisplay[i].innerHTML = allInputValue[i]
+						}
 					}
+					document.onload = appendUsers()
+					const addCart = async (id) => {
+						const addProduct = await fetch(`/user/addToCart/${id}`, { method: "GET" })
+						const response = await addProduct.json()
+						if (response.message) {
+							alert(response.message)
+						} else {
+							alert("please login and try again")
+							window.location.href = "/login"
+						}
 
-				}
-			</script>
+					}
+					const commentSubmission = async (id) => {
+						const commentInput = document.getElementById('inputForm')
+						const demoAppend = document.querySelector('#demo-append')
+						const value = commentInput.elements[0].value
+						const submitComment = await fetch(`/user/comments/${id}/${value}`, { method: "GET" })
+						const response = await submitComment.json()
+
+						if (response.message) {
+							alert(response.message)
+							demoAppend.innerHTML = demoAppend.innerHTML + `<div class="comment mt-4 text-justify float-right"> <p id="para">${value}</p></div> <br>`
+							let para = document.getElementById('para')
+							para.style.maxWidth = "8rem";
+						}
+						else {
+							window.location.href = "/" + response.redirect
+						}
+
+					}
+				</script>
 
 
 
 	</section>
-
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
 
 </body>
