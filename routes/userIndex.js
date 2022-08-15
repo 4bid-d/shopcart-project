@@ -51,12 +51,12 @@ const sendEmailOtp = async (Email) => {
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'kalkkipp@gmail.com',
-      pass: 'tocbsyxtelbnryif'
+      user: '',
+      pass: ''
     }
   });
   var mailOptions = {
-    from: 'kalkkipp@gmail.com',
+    from: '',
     to: Email,
     subject: `OTP`,
     text: `YOUR OTP IS ${randomOtp}`
