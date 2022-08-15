@@ -8,10 +8,11 @@ const USERMODEL = require('../schemas/userModel')
 const CART = require('../schemas/cartModel');
 const ORDER = require('../schemas/orders');
 const COMMENT = require('../schemas/comment');
+const DEMOUSER = require('../schemas/signinDataSession');
+const OTP = require('../schemas/otpModel');
 const { ObjectId } = require('mongodb');
 const { query } = require('express');
-const orders = require('../schemas/orders');
-
+const nodemailer = require('nodemailer');
 //to verify the user session valid or not to find userlogin
 const verifyLogin = (req, res) => {
   const session = req.session
@@ -33,7 +34,41 @@ const verifyLoginFetch = (req, res) => {
     )
   }
 }
-
+const sendEmailOtp = async (Email) => {
+  let randomOtp = Math.floor(100000 + Math.random() * 900000);
+  let findAnExistingOne = await OTP.findOne(
+    {
+      email: Email,
+    }
+  )
+  if (findAnExistingOne) return
+  await OTP.create(
+    {
+      email: Email,
+      otp: randomOtp
+    }
+  )
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'kalkkipp@gmail.com',
+      pass: 'tocbsyxtelbnryif'
+    }
+  });
+  var mailOptions = {
+    from: 'kalkkipp@gmail.com',
+    to: Email,
+    subject: `OTP`,
+    text: `YOUR OTP IS ${randomOtp}`
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
 /* GET user page. */
 router.get('/', async function (req, res, next) {
 
@@ -468,6 +503,7 @@ router.get('/myorders', async (req, res) => {
     console.log(orders)
     res.render('user/orders', {
       title: "My orders",
+      orders,
       userDetail,
       admin: false,
       user: true,
@@ -627,7 +663,12 @@ router.post('/signup/signupData', async (req, res) => {
         )
       } else {
         try {
-          userData = await USERMODEL.create(
+          await DEMOUSER.deleteMany(
+            {
+              email: signupDetails.email
+            }
+          )
+          userData = await DEMOUSER.create(
             {
               firstName: signupDetails.fName,
               LastName: signupDetails.lName,
@@ -641,14 +682,15 @@ router.post('/signup/signupData', async (req, res) => {
           console.log(err)
         } finally {
           if (signupStatus) {
-            let dbSession = await USERMODEL.findOne(
+            sendEmailOtp(signupDetails.email)
+
+            res.render('user/otp',
               {
+                title: 'otp',
+                inAnyForm: true,
                 email: signupDetails.email
               }
             )
-            req.session.loggedIn = true
-            req.session.user = dbSession
-            res.redirect('/user')
 
           }
         }
@@ -670,12 +712,68 @@ router.post('/signup/signupData', async (req, res) => {
 
 })
 
+router.get('/otp/:otp', async (req, res) => {
+  let userDetails
+  let otpDetail = await OTP.find(
+    {
+      otp: req.params.otp
+    }
+  )
+
+  if (otpDetail[0]) {
+   userDetails = await DEMOUSER.find(
+      {
+        email: otpDetail[0].email
+      }
+    )
+    await USERMODEL.create(
+      {
+        firstName: userDetails[0].firstName,
+        LastName: userDetails[0].LastName,
+        email: userDetails[0].email,
+        passWord: userDetails[0].passWord
+      }
+    )
+    let dbSession = await USERMODEL.findOne(
+      {
+        email: userDetails[0].email
+      }
+    )
+    await DEMOUSER.deleteMany(
+      {
+        email: userDetails[0].email
+      }
+    )
+    await OTP.deleteMany(
+      {
+        email: userDetails[0].email
+      }
+    )
+    req.session.loggedIn = true
+    req.session.user = dbSession
+    res.json({
+      status: true,
+      redirect: "/user"
+    })
+  } else {
+    if(userDetails){
+
+      await OTP.deleteMany(
+        {
+          email: userDetails[0].email
+        }
+        )
+    }
+    res.json({ status: false })
+  }
+})
+
 router.get('/productView/:id', async (req, res) => {
 
   try {
     const user = req.session.user
     const productId = req.params.id
-    let commentArray= []
+    let commentArray = []
     let userArray = []
     const findData = await PRODUCT.findOne(
       {
@@ -684,11 +782,11 @@ router.get('/productView/:id', async (req, res) => {
     )
     const findComments = await COMMENT.find(
       {
-        productId:productId
+        productId: productId
       }
     )
-    if(findComments[0]){
-  
+    if (findComments[0]) {
+
       let array = findComments[0].comments;
       for (let i = 0; i < array.length; i++) {
         commentArray.push(array[i])
@@ -696,13 +794,12 @@ router.get('/productView/:id', async (req, res) => {
       for (let i = 0; i < commentArray.length; i++) {
         let userDetails = await USERMODEL.find(
           {
-            email:commentArray[i].userEmail
+            email: commentArray[i].userEmail
           }
-        ) 
-        userArray.push(userDetails[0])       
+        )
+        userArray.push(userDetails[0])
       }
     }
-    console.log(userArray)
     const foundedData = findData
     res.render('user/productView', {
       foundedData,
@@ -916,7 +1013,7 @@ router.get("/comments/:id/:value", async (req, res) => {
         productId: productId
       }
     )
-    
+
     if (findExistingCommentForSameProduct === null) {
       let allComments = []
       allComments.push(
@@ -950,10 +1047,10 @@ router.get("/comments/:id/:value", async (req, res) => {
         {
           comments: newcommentsArray
         }
-        )
-        res.json({
-          message: "successfully commented"
-        })
+      )
+      res.json({
+        message: "successfully commented"
+      })
     }
   }
 })
