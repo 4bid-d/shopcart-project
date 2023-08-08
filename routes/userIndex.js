@@ -46,7 +46,7 @@ const sendEmailOtp = async (Email) => {
     OTP.deleteOne({email : Email})
   }
   await OTP.create({
-      email: Email,
+    email: Email,
       otp: randomOtp
   })
   var transporter = nodemailer.createTransport({
