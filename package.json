@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./app.js",
+    "build ":""
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -24,7 +25,8 @@
     "nodemailer": "^6.7.8",
     "nodemon": "^2.0.16",
     "simple-mongodb-helper": "^0.6.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "yarn": "^1.22.19"
   },
   "main": "app.js",
   "keywords": [],

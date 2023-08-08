@@ -41,22 +41,24 @@ const sendEmailOtp = async (Email) => {
       email: Email,
     }
   )
-  if (findAnExistingOne) return
-  await OTP.create(
-    {
+  if (findAnExistingOne) {
+
+    OTP.deleteOne({email : Email})
+  }
+  await OTP.create({
       email: Email,
       otp: randomOtp
-    }
-  )
+  })
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: '',
-      pass: ''
+      user: 'kalkkipp@gmail.com',
+      pass: `${process.env.GPASS}`
+      // pass: `fsbyrlgymfchilvn`
     }
   });
   var mailOptions = {
-    from: '',
+    from: 'Shopping kart',
     to: Email,
     subject: `OTP`,
     text: `YOUR OTP IS ${randomOtp}`
@@ -682,15 +684,19 @@ router.post('/signup/signupData', async (req, res) => {
           console.log(err)
         } finally {
           if (signupStatus) {
-            sendEmailOtp(signupDetails.email)
+            sendEmailOtp(signupDetails.email).then(()=>{
 
-            res.render('user/otp',
-              {
-                title: 'otp',
-                inAnyForm: true,
-                email: signupDetails.email
-              }
-            )
+              res.render('user/otp',
+                {
+                  title: 'otp',
+                  inAnyForm: true,
+                  email: signupDetails.email
+                }
+              )
+            }).catch((err)=>{
+              console.log(err)
+            })
+
 
           }
         }
