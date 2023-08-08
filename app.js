@@ -18,8 +18,8 @@ const fileSizeLimiter = require('./uploadMiddlewares/fileSizeLimiter');
   
 var app = express();
 
-mongoose.connect(`mongodb+srv://abidpp1212:${process.env.PASSWORD}@cluster0.coote.mongodb.net/?retryWrites=true&w=majority`,()=>console.log('connected'))
-//mongoose.connect('mongodb://localhost:27017/shopping',()=>console.log('connected'))
+// mongoose.connect(`mongodb+srv://abidpp1212:${process.env.PASSWORD}@cluster0.coote.mongodb.net/?retryWrites=true&w=majority`,()=>console.log('connected'))
+mongoose.connect('mongodb://localhost:27017/shopping',()=>console.log('connected'))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -66,7 +66,7 @@ app.use(function(err, req, res, next) {
 //   console.log(err)
 // });
 // Set Port
-app.set('port', (process.env.PORT || 3000));
+app.set('port', (process.env.PORT || 4000));
 app.listen(app.get('port'), function() {
     console.log('Server started on port '+app.get('port'));
 });

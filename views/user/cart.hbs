@@ -80,7 +80,7 @@
   async function productIncrement(id, specifiedDisplay) {
     const display = document.getElementById(specifiedDisplay)
     const quantity = display.textContent
-    let url = `http://localhost:3000/user/quantityIecrement/${id}/${quantity}`;
+    let url = `/user/quantityIecrement/${id}/${quantity}`;
     let data = await fetch(url, { method: 'GET' })
     let response = await data.json()
     total.innerHTML = response.total
@@ -92,7 +92,7 @@
     const display = document.getElementById(specifiedDisplay)
     if (display.innerText >= 2) {
       const quantity = display.textContent
-      let url = `http://localhost:3000/user/quantityDecrement/${id}/${quantity}`;
+      let url = `/user/quantityDecrement/${id}/${quantity}`;
       let data = await fetch(url, { method: 'GET' })
       let response = await data.json()
       total.innerHTML = response.total
@@ -107,7 +107,7 @@
     const displayStatus = document.getElementById('deleteDisplay')
     let specfiedDisplay = document.getElementById(id)
     if (confirm("Are sure to delete this item ?")) {
-      let url = `http://localhost:3000/user/deleteCart/${id}`;
+      let url = `/user/deleteCart/${id}`;
       let data = await fetch(url, { method: 'GET' })
       let response = await data.json()
       if (response.status) {

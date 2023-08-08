@@ -103,7 +103,7 @@
         const total = document.getElementById('totalDisplay')
 
         const fetchCart = async () => {
-            let dataCart = await fetch('http://localhost:3000/user/getCart', { method: 'GET' })
+            let dataCart = await fetch('/user/getCart', { method: 'GET' })
             let response = await dataCart.json()
             let cartArray = response.cart.idAndQuantity
             cartArray.forEach((obj) => {
