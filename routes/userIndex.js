@@ -41,7 +41,10 @@ const sendEmailOtp = async (Email) => {
       email: Email,
     }
   )
-  if (findAnExistingOne) return
+  if (findAnExistingOne) {
+
+    OTP.deleteOne({email : Email})
+  }
   await OTP.create(
     {
       email: Email,
@@ -51,7 +54,7 @@ const sendEmailOtp = async (Email) => {
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'kalkkipp',
+      user: 'kalkkipp@gmail.com',
       pass: `${process.env.GPASS}`
     }
   });
