@@ -44,7 +44,7 @@ const sendEmailOtp = async (Email) => {
   if (findAnExistingOne) {
 
     OTP.deleteOne({email : Email})
-  }
+  }   
   await OTP.create({
     email: Email,
       otp: randomOtp
